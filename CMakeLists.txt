@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 # Uncomment ONLY one (1) project to build
 
-set(AD5940_PROJECT "AD5940_ADC")
+#set(AD5940_PROJECT "AD5940_ADC")
 #set(AD5940_PROJECT "AD5940_Amperometric")
 #set(AD5940_PROJECT "AD5940_BATImpedance")
 #set(AD5940_PROJECT "AD5940_BIA")
@@ -12,7 +12,7 @@ set(AD5940_PROJECT "AD5940_ADC")
 #set(AD5940_PROJECT "AD5940_DFT")
 #set(AD5940_PROJECT "AD5940_ECG")
 #set(AD5940_PROJECT "AD5940_ECSns_EIS")
-#set(AD5940_PROJECT "AD5940_EDA")
+set(AD5940_PROJECT "AD5940_EDA")
 #set(AD5940_PROJECT "AD5940_HSDACCal")
 #set(AD5940_PROJECT "AD5940_Impedance")
 #set(AD5940_PROJECT "AD5940_LPDAC")
@@ -158,8 +158,8 @@ endif()
 
 set(AD5940_PROJECT_SOURCES
     "lib/ad5940-examples/examples/ad5940lib/ad5940.c"
-    "lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/ADICUP3029Port.c"
-    "lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/main.c"
+    "lib/ad5940-examples/examples/AD5940_EDA/ADICUP3029/ADICUP3029Port.c"
+    "lib/ad5940-examples/examples/AD5940_EDA/ADICUP3029/main.c"
     ${AD5940_APP_SOURCES}
     ${CMSIS_PACK_DEVICE_SOURCES}
     )
