@@ -27,70 +27,87 @@ set(AD5940_PROJECT "AD5940_ADC")
 
 project(${AD5940_PROJECT} C ASM)
 
+string(TOLOWER "${AD5940_PROJECT}" PROJECT_LOWERCASE)
+string(TOUPPER "${AD5940_PROJECT}" PROJECT_UPPERCASE)
+
 # Linker script
-set(LINKER_SCRIPT "${PROJECT_SOURCE_DIR}/lib/bsp/ADuCM302x_DFP.3.2.0/Source/GCC/ADuCM3029.ld")
+set(LINKER_SCRIPT "${PROJECT_SOURCE_DIR}/lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/GCC/ADuCM3029.ld")
 
+# __PROGRAM_START: to prevent CMSIS defaults from conflicting with those form ADI
 set(CMSIS_PACK_DEVICE_DEFINES
-        "-D__ADUCM3029__"
-        "-D__PROGRAM_START" #to prevent CMSIS defaults from conflicting with those form ADI
-        )
+    ${CMSIS_PACK_DEVICE_DEFINES}
+    "-D__ADUCM3029__"
+    "-D__PROGRAM_START"
+    )
 
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wall -Wdouble-promotion")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wdouble-promotion")
 
 # Include paths
 set(CMSIS_PACK_DEVICE_INCLUDES
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/config"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/sys"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/rtos_map"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/adc"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/beep"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/crc"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/crypto"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/dma"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/flash"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/general"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/gpio"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/i2c"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/pwr"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/rng"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/rtc"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/spi"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/sport"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/tmr"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/uart"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/wdt"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Include/drivers/xint"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/adc"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/beep"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/crc"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/crypto"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/dma"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/flash"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/gpio"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/i2c"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/pwr"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/rng"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/rtc"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/spi"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/sport"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/tmr"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/uart"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/wdt"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/drivers/xint"
-        )
-set(CMSIS_PACK_INCLUDES "lib/CMSIS/CMSIS_5/CMSIS/Core/Include")
+    ${CMSIS_PACK_DEVICE_INCLUDES}
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/config"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/sys"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/rtos_map"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/adc"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/beep"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/crc"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/crypto"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/dma"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/flash"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/general"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/gpio"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/i2c"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/pwr"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/rng"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/rtc"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/spi"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/sport"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/tmr"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/uart"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/wdt"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Include/drivers/xint"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/adc"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/beep"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/crc"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/crypto"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/dma"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/flash"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/gpio"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/i2c"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/pwr"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/rng"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/rtc"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/spi"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/sport"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/tmr"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/uart"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/wdt"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/drivers/xint"
+    )
+
+set(CMSIS_PACK_INCLUDES
+    ${CMSIS_PACK_INCLUDES}
+    "lib/CMSIS/CMSIS_5/CMSIS/Core/Include"
+    )
+
+set(AD5940_PROJECT_INCLUDES
+    "inc"
+    "lib/ad5940-examples/examples/ad5940lib"
+    ${CMSIS_PACK_DEVICE_INCLUDES}
+    ${CMSIS_PACK_INCLUDES}
+    )
 
 # Source files
 set(CMSIS_PACK_DEVICE_SOURCES
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/system_ADuCM3029.c"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/retarget_uart.c"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/common.c"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/adi_cyclecount.c"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/GCC/startup_ADuCM3029.c"
-        "lib/bsp/ADuCM302x_DFP.3.2.0/Source/GCC/reset_ADuCM3029.S"
-        )
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/system_ADuCM3029.c"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/retarget_uart.c"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/common.c"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/adi_cyclecount.c"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/GCC/startup_ADuCM3029.c"
+    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/GCC/reset_ADuCM3029.S"
+    )
 
 # Include application-specific project toolchain
 if(AD5940_PROJECT STREQUAL "AD5940_Ramp")
@@ -143,30 +160,29 @@ set(AD5940_PROJECT_SOURCES
     "lib/ad5940-examples/examples/ad5940lib/ad5940.c"
     "lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/ADICUP3029Port.c"
     "lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/main.c"
-    )
-
-set(AD5940_PROJECT_INCLUDES
-    "lib/ad5940-examples/examples/ad5940lib"
-    "${CMSIS_PACK_DEVICE_INCLUDES}"
-    "${CMSIS_PACK_INCLUDES}"
+    ${AD5940_APP_SOURCES}
+    ${CMSIS_PACK_DEVICE_SOURCES}
     )
 
 set(AD5940_PROJECT_DEFINITIONS
     "-DCHIPSEL_594X"
-    "-D${CMSIS_PACK_DEVICE_DEFINES}"
     "-D_RTE_"
+    ${CMSIS_PACK_DEVICE_DEFINES}
     )
+
+#message("${AD5940_PROJECT_SOURCES}")
+#message("${AD5940_PROJECT_DEFINITIONS}")
+#message("${AD5940_PROJECT_INCLUDES}")
 
 include(cmake/aducm3029.cmake)
 include(cmake/gdb-helper.cmake)
 include(cmake/binutils-arm-none-eabi.cmake)
 
 # ARM Math library
-# link_directories("lib/CMSIS/CMSIS_5/CMSIS/DSP/Lib/GCC")
+link_directories("lib/CMSIS/CMSIS_5/CMSIS/DSP/Lib/GCC")
 
 # Configure target
-add_executable(${AD5940_PROJECT} ${CMSIS_PACK_DEVICE_SOURCES} ${AD5940_PROJECT_SOURCES})
-string(TOLOWER "${AD5940_PROJECT}" PROJECT_LOWERCASE)
+add_executable(${AD5940_PROJECT} ${AD5940_PROJECT_SOURCES})
 set_target_properties(${AD5940_PROJECT} PROPERTIES OUTPUT_NAME "${PROJECT_LOWERCASE}.elf")
 target_include_directories(${AD5940_PROJECT} PUBLIC ${AD5940_PROJECT_INCLUDES})
 target_compile_definitions(${AD5940_PROJECT} PUBLIC ${AD5940_PROJECT_DEFINITIONS})

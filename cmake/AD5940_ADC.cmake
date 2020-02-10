@@ -1,4 +1,3 @@
-set(AD5940_ADC_SOURCES
-    "ad5940lib/ad5940.c"
-    "AD5940_ADC/AD5940_ADCPolling.c"
+set(AD5940_APP_SOURCES
+    "lib/ad5940-examples/examples/AD5940_ADC/AD5940_ADCPolling.c"
 )
