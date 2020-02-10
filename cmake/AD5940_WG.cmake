@@ -1,0 +1,3 @@
+set(AD5940_WG_SOURCES
+    "AD5940_WG/AD5940_WGSin.c"
+)

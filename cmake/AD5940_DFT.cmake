@@ -1,0 +1,3 @@
+set(AD5940_DFT_SOURCES
+    "AD5940_DFT/AD5940_DFTPolling.c"
+)

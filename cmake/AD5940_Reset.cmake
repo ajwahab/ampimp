@@ -1,0 +1,3 @@
+set(AD5940_RESET_SOURCES
+    "AD5940_Reset/AD5940_Reset.c"
+)

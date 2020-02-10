@@ -1,0 +1,10 @@
+# For launching from standalone GDB client. Limited testing.
+
+file @BINARY_NAME@
+target extended-remote localhost:2331
+handle SIGTRAP noprint nostop
+echo "connecting.."
+monitor reset halt
+load
+b main
+echo "breaking"

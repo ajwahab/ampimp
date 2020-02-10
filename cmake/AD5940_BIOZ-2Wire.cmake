@@ -1,0 +1,4 @@
+set(AD5940_BIOZ_SOURCES
+    "AD5940_BIOZ-2Wire/AD5940Main.c"
+    "AD5940_BIOZ-2Wire/BIOZ-2Wire.c"
+)

@@ -1,0 +1,6 @@
+[submodule "lib/CMSIS/CMSIS_5"]
+	path = lib/CMSIS/CMSIS_5
+	url = git@github.com:ARM-software/CMSIS_5.git
+[submodule "lib/ad5940-examples"]
+	path = lib/ad5940-examples
+	url = git@github.com:analogdevicesinc/ad5940-examples.git

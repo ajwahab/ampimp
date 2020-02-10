@@ -1,0 +1,40 @@
+
+PROCESSOR = ADuCM302.
+
+TOOLCHAIN = KEIL
+
+ 
+
+#delete any previous build files 
+
+<CMD, del /Q/S "$testdir\Listings">
+
+<CMD, del /Q/S "$testdir\Objects">
+
+<CMD, del /Q/S "$testdir\RTE">
+
+ 
+
+###### Debug Config ######
+
+<BUILDPROJECT, $testdir\HelloWorld.uvprojx, HelloWorld Debug>
+
+<BUILDFIND, 0 Error(s) >
+
+<BUILDFIND, 0 Warning(s) >
+
+<BUILDNOFIND, TTH:NOCASE:MATCHANY, error:, warning:> 
+
+<ASSERT_FILEEXISTS, $testdir\Objects\HelloWorld.axf>
+
+###### Release Config ######
+
+<BUILDPROJECT, $testdir\HelloWorld.uvprojx, HelloWorld Release>
+
+<BUILDFIND, 0 Error(s) >
+
+<BUILDFIND, 0 Warning(s) >
+
+<BUILDNOFIND, TTH:NOCASE:MATCHANY, error:, warning:> 
+
+<ASSERT_FILEEXISTS, $testdir\Objects\HelloWorld.axf>

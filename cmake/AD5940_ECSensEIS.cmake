@@ -1,0 +1,4 @@
+set(AD5940_ECSENSEIS_SOURCES
+    "AD5940_ECSns_EIS/AD5940Main.c"
+    "AD5940_ECSns_EIS/Impedance.c"
+)

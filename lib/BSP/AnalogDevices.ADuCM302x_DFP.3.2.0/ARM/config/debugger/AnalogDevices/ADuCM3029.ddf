@@ -1,0 +1,29 @@
+;; Architecture extensions
+
+;; Memory information ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 
+;; Used to define address zones within the ARM address space (Memory). 
+;;
+;;   Name      may be almost anything
+;;   AdrSpace  must be Memory
+;;   StartAdr  start of memory block
+;;   EndAdr    end of memory block
+;;   AccType   type of access, read-only (R), read-write (RW) or SFR (W)
+
+[Memory]
+;;        Name             AdrSpace    StartAdr    EndAdr      AccType   Width
+Memory =  Periph           Memory      0x40000000  0x4004CDFF  W  
+Memory =  SystemSFR        Memory      0xE0000000  0xFFFFFFFF  W  
+Memory =  Flash            Memory      0x00000000  0x0003FFFF  R  
+Memory =  RAM0             Memory      0x20000000  0x20001FFF  RW 
+Memory =  RAM1             Memory      0x20002000  0x20003FFF  RW 
+Memory =  RAM2             Memory      0x10000000  0x10003FFF  RW 
+Memory =  RAM3             Memory      0x20040000  0x20043FFF  RW 
+Memory =  RAM4             Memory      0x10004000  0x10006FFF  RW 
+Memory =  RAM5             Memory      0x10007000  0x10007FFF  RW 
+
+TrustedRanges = true
+UseSfrFilter = true
+
+[SfrInclude]
+File = ioADUCM302x.ddf

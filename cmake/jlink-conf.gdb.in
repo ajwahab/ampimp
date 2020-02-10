@@ -1,0 +1,18 @@
+# Init file for debugging from an established GDB connection, such as CLion's remote GDB target.
+# Flashes and halts the device.
+
+set verbose on
+echo Attempting to connect to SEGGER GDB...\n
+
+# hookpost-remote gets called after the target remote command has successful finished.
+# we force a download of the binary, do a reset and halt on the target and set an initial breakpoint in main
+# SIGTRAP breaking is disabled (otherwise GDB will break for interrupts!)
+
+define target hookpost-remote
+handle SIGTRAP noprint nostop
+echo Connected!\n
+load
+monitor reset
+halt
+b main
+end

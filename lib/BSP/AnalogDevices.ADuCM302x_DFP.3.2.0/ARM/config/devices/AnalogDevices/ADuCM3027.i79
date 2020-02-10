@@ -1,0 +1,47 @@
+[FILEFORMAT]
+rev=1.5
+
+[CHIP]
+//Chip name
+name=ADUCM3027
+
+//What endian modes does the chip support? (littleonly, bigonly, both(default))
+endiansupport=littleonly
+
+//Does the chip support the thumb instruction set? (true(default), false)
+thumbsupport=true
+
+//Does the chip support the arm instruction set? (true(default), false)
+armsupport=false
+
+//Does the chip have an FPU coprocessor?
+//(VFPv1,VFPv2,VFP9-S,None(default)
+fpu=
+
+//Debugger interface, default JTAG=false, RTCK=true, SWD=true if Cortex cores, SWD=false if ARM cores, SWO_TraceD0=false
+JTAG=false
+RTCK=false
+SWD=true
+SWO_TraceD0=false
+
+[CORE]
+//Name of the ARM processor core
+name=Cortex-M3
+
+
+[DDF FILE]
+//Name of the ddf file
+name=${CMSIS_PACK_PATH_AnalogDevices#ADuCM302x_DFP#3.2.0}$\ARM\config\debugger\AnalogDevices\ADuCM3027.ddf
+
+
+[LINKER FILE]
+//Name of the linker config file
+name=${CMSIS_PACK_PATH_AnalogDevices#ADuCM302x_DFP#3.2.0}$\ARM\config\linker\AnalogDevices\ADuCM3027.icf
+
+
+[FLASH LOADER]
+little=${CMSIS_PACK_PATH_AnalogDevices#ADuCM302x_DFP#3.2.0}$\ARM\config\flashloader\AnalogDevices\FlashADUCM3027.board
+big=
+args=
+
+

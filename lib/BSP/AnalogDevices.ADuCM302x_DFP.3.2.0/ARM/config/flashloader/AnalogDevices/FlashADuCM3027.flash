@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<flash_device>
+  <exe>FlashADUCM3027.out</exe>
+  <page>4</page>
+  <block>64 0x800</block>
+  <flash_base>0x00000000</flash_base>
+  <macro>FlashADUCM3027.mac</macro>
+  <aggregate>1</aggregate>
+</flash_device>

@@ -1,0 +1,3 @@
+set(AD5940_LPLOOP_SOURCES
+    "AD5940_LPLoop/AD5940_LPLoop.c"
+)

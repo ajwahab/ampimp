@@ -1,0 +1,4 @@
+execUserFlashInit()
+{
+    __message("-I- execUserFlashInit!");
+}
