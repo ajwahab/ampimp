@@ -40,7 +40,7 @@ set(CMSIS_PACK_DEVICE_DEFINES
     "-D__PROGRAM_START"
     )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wdouble-promotion")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wdouble-promotion -g")
 
 # Include paths
 set(CMSIS_PACK_DEVICE_INCLUDES
