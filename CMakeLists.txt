@@ -161,7 +161,9 @@ elseif(AD5940_PROJECT STREQUAL "AD5940_Sequencer")
 elseif(AD5940_PROJECT STREQUAL "AD5940_Impedance")
   include(cmake/AD5940_Impedance.cmake)
 elseif(AD5940_PROJECT STREQUAL "AD5940_APP")
-  set(AD5940_APP_SOURCES "src")
+  set(AD5940_APP_SOURCES
+      "src/retarget.c"
+      )
   set(AD5940_APP_INCLUDES "inc")
   include(cmake/AD5940_App.cmake)
 endif()
