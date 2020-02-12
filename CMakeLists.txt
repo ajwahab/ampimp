@@ -40,7 +40,7 @@ set(CMSIS_PACK_DEVICE_DEFINES
     "-D__PROGRAM_START"
     )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wdouble-promotion -g")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wdouble-promotion -Og -g3")
 
 # Include paths
 set(CMSIS_PACK_DEVICE_INCLUDES
@@ -158,6 +158,8 @@ endif()
 
 set(AD5940_PROJECT_SOURCES
     "lib/ad5940-examples/examples/ad5940lib/ad5940.c"
+    #"lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/ADICUP3029Port.c"
+    #"lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/main.c"
     "lib/ad5940-examples/examples/AD5940_EDA/ADICUP3029/ADICUP3029Port.c"
     "lib/ad5940-examples/examples/AD5940_EDA/ADICUP3029/main.c"
     ${AD5940_APP_SOURCES}
