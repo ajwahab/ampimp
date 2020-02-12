@@ -6,8 +6,8 @@ See SETUP.md
 
 # Development  
 
-`$ cd ad5940`  
-`$ ./ad5940/build.sh`  
+`$ cd ad5940/ad5940`  
+`$ ./build.sh`  
 
 ----  
 

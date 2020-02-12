@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 # Uncomment ONLY one (1) project to build
 
-#set(AD5940_PROJECT "AD5940_ADC")
+set(AD5940_PROJECT "AD5940_ADC")
 #set(AD5940_PROJECT "AD5940_Amperometric")
 #set(AD5940_PROJECT "AD5940_BATImpedance")
 #set(AD5940_PROJECT "AD5940_BIA")
@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.5)
 #set(AD5940_PROJECT "AD5940_DFT")
 #set(AD5940_PROJECT "AD5940_ECG")
 #set(AD5940_PROJECT "AD5940_ECSns_EIS")
-set(AD5940_PROJECT "AD5940_EDA")
+#set(AD5940_PROJECT "AD5940_EDA")
 #set(AD5940_PROJECT "AD5940_HSDACCal")
 #set(AD5940_PROJECT "AD5940_Impedance")
 #set(AD5940_PROJECT "AD5940_LPDAC")
@@ -24,6 +24,7 @@ set(AD5940_PROJECT "AD5940_EDA")
 #set(AD5940_PROJECT "AD5940_SqrWaveVoltammetry")
 #set(AD5940_PROJECT "AD5940_Temperature")
 #set(AD5940_PROJECT "AD5940_WG")
+#set(AD5940_PROJECT "AD5940_APP")
 
 project(${AD5940_PROJECT} C ASM)
 
@@ -92,13 +93,6 @@ set(CMSIS_PACK_INCLUDES
     "lib/CMSIS/CMSIS_5/CMSIS/Core/Include"
     )
 
-set(AD5940_PROJECT_INCLUDES
-    "inc"
-    "lib/ad5940-examples/examples/ad5940lib"
-    ${CMSIS_PACK_DEVICE_INCLUDES}
-    ${CMSIS_PACK_INCLUDES}
-    )
-
 # Source files
 set(CMSIS_PACK_DEVICE_SOURCES
     "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/system_ADuCM3029.c"
@@ -110,6 +104,10 @@ set(CMSIS_PACK_DEVICE_SOURCES
     )
 
 # Include application-specific project toolchain
+set(AD5940_APP_SOURCES
+    "lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/ADICUP3029Port.c"
+    "lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/main.c"
+    )
 if(AD5940_PROJECT STREQUAL "AD5940_Ramp")
   include(cmake/AD5940_Ramp.cmake)
 elseif(AD5940_PROJECT STREQUAL "AD5940_SqrWaveVoltammetry")
@@ -135,8 +133,16 @@ elseif(AD5940_PROJECT STREQUAL "AD5940_Temperature")
 elseif(AD5940_PROJECT STREQUAL "AD5940_Amperometric")
   include(cmake/AD5940_Amperometric.cmake)
 elseif(AD5940_PROJECT STREQUAL "AD5940_BioElec")
+  set(AD5940_APP_SOURCES
+      "lib/ad5940-examples/examples/AD5940_BioElec/ADICUP3029/ADICUP3029Port.c"
+      "lib/ad5940-examples/examples/AD5940_BioElec/ADICUP3029/main.c"
+      )
   include(cmake/AD5940_BioElec.cmake)
 elseif(AD5940_PROJECT STREQUAL "AD5940_EDA")
+  set(AD5940_APP_SOURCES
+      "lib/ad5940-examples/examples/AD5940_EDA/ADICUP3029/ADICUP3029Port.c"
+      "lib/ad5940-examples/examples/AD5940_EDA/ADICUP3029/main.c"
+      )
   include(cmake/AD5940_EDA.cmake)
 elseif(AD5940_PROJECT STREQUAL "AD5940_ECSns_EIS")
   include(cmake/AD5940_ECSensEIS.cmake)
@@ -154,27 +160,31 @@ elseif(AD5940_PROJECT STREQUAL "AD5940_Sequencer")
   include(cmake/AD5940_Sequencer.cmake)
 elseif(AD5940_PROJECT STREQUAL "AD5940_Impedance")
   include(cmake/AD5940_Impedance.cmake)
+elseif(AD5940_PROJECT STREQUAL "AD5940_APP")
+  set(AD5940_APP_SOURCES "src")
+  set(AD5940_APP_INCLUDES "inc")
+  include(cmake/AD5940_App.cmake)
 endif()
+
+set(AD5940_PROJECT_INCLUDES
+    "lib/ad5940-examples/examples/ad5940lib"
+    ${AD5940_APP_INCLUDES}
+    ${CMSIS_PACK_DEVICE_INCLUDES}
+    ${CMSIS_PACK_INCLUDES}
+    )
 
 set(AD5940_PROJECT_SOURCES
     "lib/ad5940-examples/examples/ad5940lib/ad5940.c"
-    #"lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/ADICUP3029Port.c"
-    #"lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/main.c"
-    "lib/ad5940-examples/examples/AD5940_EDA/ADICUP3029/ADICUP3029Port.c"
-    "lib/ad5940-examples/examples/AD5940_EDA/ADICUP3029/main.c"
     ${AD5940_APP_SOURCES}
     ${CMSIS_PACK_DEVICE_SOURCES}
     )
 
 set(AD5940_PROJECT_DEFINITIONS
+    "-DREDIRECT_OUTPUT_TO_UART"
     "-DCHIPSEL_594X"
     "-D_RTE_"
     ${CMSIS_PACK_DEVICE_DEFINES}
     )
-
-#message("${AD5940_PROJECT_SOURCES}")
-#message("${AD5940_PROJECT_DEFINITIONS}")
-#message("${AD5940_PROJECT_INCLUDES}")
 
 include(cmake/aducm3029.cmake)
 include(cmake/gdb-helper.cmake)

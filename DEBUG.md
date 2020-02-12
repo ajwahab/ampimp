@@ -1,12 +1,21 @@
 In a terminal window:  
-./oocd.sh
+`$ ./ocd.sh`  
 
 ----  
 
 In a new terminal window:  
 `$ arm-none-eabi-gdb`  
 `(gdb) target remote localhost:3333`  
-`(gdb) build/ad5940_app.elf`  
+`(gdb) file build/ad5940_app.elf`  
+`(gdb) load`  
+`(gdb) monitor reset halt`  
+`(gdb) step`  
+`(gdb) continue`  
+`(gdb) Ctrl+c`  
+`(gdb) list`  
+`(gdb) break <function>`  
+`(gdb) break <filename>:<function>`  
+`(gdb) break <line number>`  
 
 ----  
 
