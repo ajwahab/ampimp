@@ -49,8 +49,8 @@ OpenOCD + GDB may be used for debugging via the CMSIS-DAP interface provided by 
 `(gdb) continue`  
 `(gdb) Ctrl+c`  # interrupt execution  
 `(gdb) list`  # display several lines of code at debugger position, repeated calls show more lines  
-`(gdb) break <function>`  # set a breakpoint at the specified function within the current source file
-`(gdb) b <filename>:<function>`  # set a breakpoint at the specified function within the specified source file
+`(gdb) break <function>`  # set a breakpoint at the specified function within the current source file  
+`(gdb) b <filename>:<function>`  # set a breakpoint at the specified function within the specified source file  
 `(gdb) b <line number>`  # set breakpoint at line within current source file  
 `(gdb) quit`  # exit GDB
 The GDB Text User Interface (TUI) mode may be enabled when invoking GDB as:  
