@@ -12,18 +12,18 @@ Copyright (c) 2017-2019 Analog Devices, Inc. All Rights Reserved.
 This software is proprietary to Analog Devices, Inc. and its licensors.
 By using this software you agree to the terms of the associated
 Analog Devices Software License Agreement.
- 
+
 *****************************************************************************/
 
-#include <AD5940.h>
-#include "ADuCM3029.h"
+#include "ad5940.h"
+#include "aducm3029.h"
 
 #define SYSTICK_MAXCOUNT ((1L<<24)-1) /* we use Systick to complete function Delay10uS(). This value only applies to ADICUP3029 board. */
 #define SYSTICK_CLKFREQ   26000000L   /* Systick clock frequency in Hz. This only appies to ADICUP3029 board */
 volatile static uint32_t ucInterrupted = 0;       /* Flag to indicate interrupt occurred */
 
 /**
-	@brief Using SPI to transmit N bytes and return the received bytes. This function targets to 
+	@brief Using SPI to transmit N bytes and return the received bytes. This function targets to
                      provide a more efficent way to transmit/receive data.
 	@param pSendBuffer :{0 - 0xFFFFFFFF}
       - Pointer to the data to be sent.
@@ -129,7 +129,7 @@ uint32_t AD5940_MCUResourceInit(void *pCfg)
   pADI_XINT0->CFG0 = (0x1<<0)|(1<<3);//External IRQ0 enabled. Falling edge
   pADI_XINT0->CLR = BITM_XINT_CLR_IRQ0;
   NVIC_EnableIRQ(XINT_EVT0_IRQn);		  //Enable External Interrupt 0 source.
-  
+
   AD5940_CsSet();
   AD5940_RstSet();
   return 0;

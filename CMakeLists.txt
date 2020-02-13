@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 # Uncomment ONLY one (1) project to build
 
-set(AD5940_PROJECT "AD5940_ADC")
+#set(AD5940_PROJECT "AD5940_ADC")
 #set(AD5940_PROJECT "AD5940_Amperometric")
 #set(AD5940_PROJECT "AD5940_BATImpedance")
 #set(AD5940_PROJECT "AD5940_BIA")
@@ -24,7 +24,7 @@ set(AD5940_PROJECT "AD5940_ADC")
 #set(AD5940_PROJECT "AD5940_SqrWaveVoltammetry")
 #set(AD5940_PROJECT "AD5940_Temperature")
 #set(AD5940_PROJECT "AD5940_WG")
-#set(AD5940_PROJECT "AD5940_APP")
+set(AD5940_PROJECT "AD5940_APP")
 
 project(${AD5940_PROJECT} C ASM)
 
@@ -162,10 +162,19 @@ elseif(AD5940_PROJECT STREQUAL "AD5940_Impedance")
   include(cmake/AD5940_Impedance.cmake)
 elseif(AD5940_PROJECT STREQUAL "AD5940_APP")
   set(AD5940_APP_SOURCES
+      "src/main.c"
       "src/retarget.c"
+      "src/AD5940Main.c"
+      "src/ADICUP3029Port.c"
+      "src/UARTCmd.c"
+      "lib/ad5940-examples/examples/AD5940_Amperometric/Amperometric.c"
+      "lib/ad5940-examples/examples/AD5940_Impedance/Impedance.c"
       )
-  set(AD5940_APP_INCLUDES "inc")
-  include(cmake/AD5940_App.cmake)
+  set(AD5940_APP_INCLUDES
+      "inc"
+      "lib/ad5940-examples/examples/AD5940_Amperometric"
+      "lib/ad5940-examples/examples/AD5940_Impedance"
+      )
 endif()
 
 set(AD5940_PROJECT_INCLUDES

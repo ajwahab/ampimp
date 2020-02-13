@@ -8,10 +8,7 @@ Analog Devices Software License Agreement.
 
 */
 
-#include "stdio.h"
-#include "retarget.h"
-#include "ADuCM3029.h"
-#include "AD5940.h"
+#include "main.h"
 
 /* Functions that used to initialize MCU platform */
 uint32_t MCUPlatformInit(void *pCfg);
@@ -21,7 +18,7 @@ int main(void)
   void AD5940_Main(void);
   MCUPlatformInit(0);
   AD5940_MCUResourceInit(0);
-  printf("Hello AD5940-Build Time:%s\n",__TIME__);
+  printf("AD5940-Build Time:%s\r\n",__TIME__);
   AD5940_Main();
 }
 

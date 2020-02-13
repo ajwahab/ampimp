@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "retarget.h"
 
 FILE __stdout;
@@ -19,7 +18,7 @@ int fputc(int c, FILE *f)
   return c;
 }
 
-int _read (int fd, char * ptr, int len)
+int _read(int fd, char *ptr, int len)
 {
   char c;
   int  i;
@@ -34,10 +33,10 @@ int _read (int fd, char * ptr, int len)
   return (len - i);
 }
 
-int _write (int fd, char * ptr, int len)
+int _write(int fd, char *ptr, int len)
 {
   int i;
 
-  for (i = 0; i < len; i++) fputc (*ptr++, stdout);
+  for (i = 0; i < len; i++) fputc(*ptr++, stdout);
   return (i);
 }
