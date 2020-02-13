@@ -41,7 +41,7 @@ set(CMSIS_PACK_DEVICE_DEFINES
     "-D__PROGRAM_START"
     )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wdouble-promotion -Og -g3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wdouble-promotion -O3 -g3")
 
 # Include paths
 set(CMSIS_PACK_DEVICE_INCLUDES
@@ -96,7 +96,7 @@ set(CMSIS_PACK_INCLUDES
 # Source files
 set(CMSIS_PACK_DEVICE_SOURCES
     "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/system_ADuCM3029.c"
-    "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/retarget_uart.c"
+    #"lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/retarget_uart.c"
     "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/common.c"
     "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/adi_cyclecount.c"
     "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/GCC/startup_ADuCM3029.c"
@@ -200,6 +200,9 @@ set(AD5940_PROJECT_DEFINITIONS
 include(cmake/aducm3029.cmake)
 include(cmake/gdb-helper.cmake)
 include(cmake/binutils-arm-none-eabi.cmake)
+
+add_link_options("-u _printf_float")
+add_link_options("-lc")
 
 # ARM Math library
 link_directories("lib/CMSIS/CMSIS_5/CMSIS/DSP/Lib/GCC")

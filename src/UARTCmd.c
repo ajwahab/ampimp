@@ -101,7 +101,7 @@ void UARTCmd_RemoveSpaces(void)
 
 void UARTCmd_MatchCommand(void)
 {
-  char *pcmd;
+  char *pcmd = &line_buffer[0];
   int i = 0;
   pObjFound = 0;
   while(i<line_buffer_index)
@@ -184,7 +184,7 @@ void UARTCmd_Process(char c)
     }
     /* Step3, call function */
     res = ((uint32_t (*)(uint32_t, uint32_t))(pObjFound))(parameter1, parameter2);
-    printf("res:0x%08x\r\n", res);
+    printf("res: 0x%08x\r\n", res);
     line_buffer_index = 0;  /* Reset buffer */
   }
   else

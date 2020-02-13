@@ -20,8 +20,8 @@ typedef struct
   AD5940Err (*pAppUserDataProc)    (void *pBuff, uint32_t pCount);
 } app_t;
 
-AD5940Err AmpShowResult(float *pData, uint32_t DataCount);
-AD5940Err ImpShowResult(uint32_t *pData, uint32_t DataCount);
+AD5940Err AmpShowResult(void *pData, uint32_t DataCount);
+AD5940Err ImpShowResult(void *pData, uint32_t DataCount);
 
 app_t app_list[APP_NUM] =
 {
@@ -43,28 +43,30 @@ app_t app_list[APP_NUM] =
   }
 };
 
-AD5940Err AmpShowResult(float *pData, uint32_t DataCount)
+AD5940Err AmpShowResult(void *pData, uint32_t DataCount)
 {
+  float *pAmp = (float *)pData;
   /* Print data*/
   for(int i=0;i<DataCount;i++)
   {
-    printf("index:%d, Current:%fuA\r\n", i, pData[i]);
+    // printf("index:%d, Current:%d pA\r\n", i, (uint32_t)(pAmp[i]*1e6));
+    printf("index:%d, Current:%f uA\r\n", i, (uint32_t)pAmp[i]);
   }
   return 0;
 }
 
-AD5940Err ImpShowResult(uint32_t *pData, uint32_t DataCount)
+AD5940Err ImpShowResult(void *pData, uint32_t DataCount)
 {
   float freq;
 
   fImpPol_Type *pImp = (fImpPol_Type*)pData;
   AppIMPCtrl(IMPCTRL_GETFREQ, &freq);
 
-  printf("Freq:%.2f \r\n", freq);
+  printf("Freq: %f\r\n", freq);
   /*Process data*/
   for(int i=0;i<DataCount;i++)
   {
-    printf("RzMag: %f Ohm, RzPhase: %f \r\n", pImp[i].Magnitude, pImp[i].Phase*180/MATH_PI);
+    printf("RzMag: %f Ohm, RzPhase: %f\r\n", pImp[i].Magnitude, pImp[i].Phase*180/MATH_PI);
   }
   return 0;
 }
@@ -133,7 +135,7 @@ static int32_t AD5940PlatformCfg(void)
   LfoscMeasure.CalSeqAddr = 0;
   LfoscMeasure.SystemClkFreq = 16000000.0f; /* 16MHz in this firmware. */
   AD5940_LFOSCMeasure(&LfoscMeasure, &LFOSCFreq);
-  printf("LFOSCFreq: %f\r\n", LFOSCFreq);
+  printf("LFOSCFreq: %d\r\n", LFOSCFreq);
   return 0;
 }
 
