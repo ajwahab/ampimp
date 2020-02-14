@@ -18,7 +18,7 @@ int main(void)
   void AD5940_Main(void);
   MCUPlatformInit(0);
   AD5940_MCUResourceInit(0);
-  printf("AD5940-Build Time:%s\r\n",__TIME__);
+  printf("AD5940-Build Time: %s\r\n", __TIME__);
   AD5940_Main();
 }
 

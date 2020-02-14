@@ -201,8 +201,8 @@ include(cmake/aducm3029.cmake)
 include(cmake/gdb-helper.cmake)
 include(cmake/binutils-arm-none-eabi.cmake)
 
-add_link_options("-u _printf_float")
-add_link_options("-lc")
+#add_link_options("-u _printf_float")
+#add_link_options("-lc")
 
 # ARM Math library
 link_directories("lib/CMSIS/CMSIS_5/CMSIS/DSP/Lib/GCC")

@@ -135,7 +135,7 @@ static int32_t AD5940PlatformCfg(void)
   LfoscMeasure.CalSeqAddr = 0;
   LfoscMeasure.SystemClkFreq = 16000000.0f; /* 16MHz in this firmware. */
   AD5940_LFOSCMeasure(&LfoscMeasure, &LFOSCFreq);
-  printf("LFOSCFreq: %d\r\n", LFOSCFreq);
+  printf("LFOSCFreq: %f\r\n", LFOSCFreq);
   return 0;
 }
 
