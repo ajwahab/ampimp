@@ -16,14 +16,25 @@ Custom application for the [EVAL-AD5940ELCZ](https://wiki.analog.com/resources/e
         `<appid>`: 0 = amperometric, 1 = impedance  
 
 ## Jupyter notebook  
-----
-# Prerequisites  
-- `git`  
-- GNU ARM toolchain  
-- `cmake`  
+Prerequisites: 
+- [Python 3](https://www.python.org)  
+- [Jupyter](https://jupyter.org)  
+- [pySerial](https://pyserial.readthedocs.io/en/latest/pyserial.html)  
+- [Pandas](https://pandas.pydata.org)  
+- [numpy](https://numpy.org)  
 
+`$ pip3 install --user pyserial notebook pandas numpy`  
+`$ cd python`  
+`$ jupyter-notebook`  
+
+----
 # Development  
 ## Building source  
+Prerequisites:  
+- [Git](https://git-scm.com)  
+- [GNU ARM toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm)  
+- [CMake](https://cmake.org)  
+
 `$ mkdir ad5940`  
 `$ cd ad5940`  
 `$ git clone --recurse-submodules git@github.com:ninfinity/ad5940.git`  
