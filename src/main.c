@@ -131,7 +131,7 @@ int UrtCfg(int iBaud)
 
 void UART_Int_Handler(void)
 {
-  void UARTCmd_Process(char);
+  // void uart_cmd_process(char);
   uint32_t flag;
   flag = pADI_UART0->LSR;
   flag = pADI_UART0->IIR;
@@ -143,7 +143,7 @@ void UART_Int_Handler(void)
     {
       char c;
       c = pADI_UART0->COMRX&0xff;
-      UARTCmd_Process(c);
+      uart_cmd_process(c);
     }
   }
   if((flag & 0x0e) == 0xc)  /* Time-out */
@@ -154,7 +154,7 @@ void UART_Int_Handler(void)
     {
       char c;
       c = pADI_UART0->COMRX&0xff;
-      UARTCmd_Process(c);
+      uart_cmd_process(c);
     }
   }
 }

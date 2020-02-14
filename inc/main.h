@@ -8,11 +8,12 @@
 #include "retarget.h"
 #include "ADuCM3029.h"
 #include "ad5940.h"
+#include "uart_cmd.h"
 
-enum app_ctrl{
-  APPCTRL_START,
-  APPCTRL_STOPNOW,
-  APPCTRL_SHUTDOWN=4
-  };
+enum {
+  APP_CTRL_START,
+  APP_CTRL_STOP_NOW,
+  APP_CTRL_SHUTDOWN = 4
+};
 
 #endif //_MAIN_H_

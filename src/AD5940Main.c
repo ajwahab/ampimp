@@ -1,9 +1,21 @@
+/**
+ * @defgroup   AD5940MAIN
+ *
+ * @brief      Based on AD5940_Amperometric/AD5940Main.c, AD5940_Impedance/AD5940Main.c, and AD5940_BioElec/AD5940Main.c examples from Analog Devices, Inc.
+ *
+ * @author     Adam Wahab
+ * @date       2020
+ */
 
 #include "main.h"
-#include "Impedance.h"
-#include "Amperometric.h"
+#include "Impedance.h" //in AD5940_Impedance
+#include "Amperometric.h" //in AD5940_Amperometric
 
-enum app_id {APP_ID_AMP, APP_ID_IMP, APP_NUM};
+enum {
+  APP_ID_AMP,
+  APP_ID_IMP,
+  APP_NUM
+};
 
 #define APP_AMP_SEQ_ADDR    (0)
 #define APP_IMP_SEQ_ADDR    (256)
@@ -11,71 +23,106 @@ enum app_id {APP_ID_AMP, APP_ID_IMP, APP_NUM};
 #define APP_AMP_MAX_SEQLEN  (256)
 #define APP_IMP_MAX_SEQLEN  (128)
 
+#define APP_BUF_SIZE        (512)
+
+#define APP_READY_STR "\r\n> "
+#define APP_LEAD_CHAR "$"
+#define APP_TRAIL_CHAR "\r"
+
 typedef struct
 {
-  AD5940Err (*pAppGetCfg) (void *pCfg);
-  AD5940Err (*pAppInit)   (uint32_t *pBuffer, uint32_t BufferSize);
-  AD5940Err (*pAppISR)    (void *pBuff, uint32_t *pCount);
-  AD5940Err (*pAppCtrl)   (int32_t BcmCtrl, void *pPara);
-  AD5940Err (*pAppUserDataProc)    (void *pBuff, uint32_t pCount);
+  uint32_t isr_count;
+  uint32_t cycle_limit; //number of cycles to perform
+  uint8_t app_id_next; //id of app to following current app
+  AD5940Err (*pAppGetCfg) (void *p_cfg);
+  AD5940Err (*pAppInit)   (uint32_t *p_buf, uint32_t buf_size);
+  AD5940Err (*pAppISR)    (void *p_buf, uint32_t *p_count);
+  AD5940Err (*pAppCtrl)   (int32_t bcm_ctrl, void *p_para);
+  AD5940Err (*pAppUserDataProc)    (void *p_buf, uint32_t p_count);
 } app_t;
 
-AD5940Err AmpShowResult(void *pData, uint32_t DataCount);
-AD5940Err ImpShowResult(void *pData, uint32_t DataCount);
+AD5940Err amp_print_result(void *p_data, uint32_t data_count);
+AD5940Err imp_print_result(void *p_data, uint32_t data_count);
 
-app_t app_list[APP_NUM] =
+app_t *g_p_app_curr; //pointer to object for currently running app
+uint8_t g_switch_app = 1; //flag to allow app switching
+uint8_t g_app_id = APP_ID_AMP; //set initial application
+uint32_t g_app_buf[APP_BUF_SIZE];
+float g_lfo_sc_freq;    /* Measured LFOSC frequency */
+
+app_t g_app_list[APP_NUM] =
 {
   /* Amperometric App */
   {
+    .isr_count = 0,
+    .cycle_limit = 10,
+    .app_id_next = APP_ID_IMP,
     .pAppGetCfg = AppAMPGetCfg,
     .pAppInit = AppAMPInit,
     .pAppISR = AppAMPISR,
     .pAppCtrl = AppAMPCtrl,
-    .pAppUserDataProc = AmpShowResult,
+    .pAppUserDataProc = amp_print_result
   },
   /* Impedance App */
   {
+    .isr_count = 0,
+    .cycle_limit = 1,
+    .app_id_next = APP_ID_AMP,
     .pAppGetCfg = AppIMPGetCfg,
     .pAppInit = AppIMPInit,
     .pAppISR = AppIMPISR,
     .pAppCtrl = AppIMPCtrl,
-    .pAppUserDataProc = ImpShowResult,
+    .pAppUserDataProc = imp_print_result
   }
 };
 
-AD5940Err AmpShowResult(void *pData, uint32_t DataCount)
+/**
+ * @brief      Based on AmpShowResult in AD5940_Amperometric
+ *
+ * @param      p_data      The data
+ * @param[in]  data_count  The data count
+ *
+ * @return     Error flag
+ */
+AD5940Err amp_print_result(void *p_data, uint32_t data_count)
 {
-  float *pAmp = (float *)pData;
+  float *pAmp = (float *)p_data;
   /* Print data*/
-  for(int i=0;i<DataCount;i++)
+  for(int i=0; i<data_count; i++)
   {
-    // printf("index:%d, Current:%d pA\r\n", i, (uint32_t)(pAmp[i]*1e6));
-    printf("index:%d, Current:%f uA\r\n", i, (uint32_t)pAmp[i]);
+    printf("%i,%i,%f\r\n", g_app_id, i, pAmp[i]);
   }
   return 0;
 }
 
-AD5940Err ImpShowResult(void *pData, uint32_t DataCount)
+/**
+ * @brief      Based on ImpShowResult in AD5940_Impedance
+ *
+ * @param      p_data      The data
+ * @param[in]  data_count  The data count
+ *
+ * @return     Error flag
+ */
+AD5940Err imp_print_result(void *p_data, uint32_t data_count)
 {
   float freq;
-
-  fImpPol_Type *pImp = (fImpPol_Type*)pData;
+  fImpPol_Type *pImp = (fImpPol_Type*)p_data;
   AppIMPCtrl(IMPCTRL_GETFREQ, &freq);
 
-  printf("Freq: %f\r\n", freq);
-  /*Process data*/
-  for(int i=0;i<DataCount;i++)
+  for(int i=0; i<data_count; i++)
   {
-    printf("RzMag: %f Ohm, RzPhase: %f\r\n", pImp[i].Magnitude, pImp[i].Phase*180/MATH_PI);
+    // printf("RzMag: %f Ohm, RzPhase: %f\r\n", pImp[i].Magnitude, pImp[i].Phase*180/MATH_PI);
+    printf("%i,%i,%f,%f,%f\r\n", g_app_id, i, freq, pImp[i].Magnitude, (pImp[i].Phase*180)/MATH_PI);
   }
   return 0;
 }
 
-#define APP_BUFF_SIZE   (512)
-uint32_t AppBuff[APP_BUFF_SIZE];
-float LFOSCFreq;    /* Measured LFOSC frequency */
-
-/* Initialize AD5940 basic blocks like clock */
+/**
+ * @brief      Initialize AD5940 basic blocks like clock.
+ * Based on AD5940PlatformCfg in AD5940_BioElec
+ *
+ * @return     { description_of_the_return_value }
+ */
 static int32_t AD5940PlatformCfg(void)
 {
   CLKCfg_Type clk_cfg;
@@ -134,150 +181,160 @@ static int32_t AD5940PlatformCfg(void)
   LfoscMeasure.CalDuration = 1000.0;  /* 1000ms used for calibration. */
   LfoscMeasure.CalSeqAddr = 0;
   LfoscMeasure.SystemClkFreq = 16000000.0f; /* 16MHz in this firmware. */
-  AD5940_LFOSCMeasure(&LfoscMeasure, &LFOSCFreq);
-  printf("LFOSCFreq: %f\r\n", LFOSCFreq);
+  AD5940_LFOSCMeasure(&LfoscMeasure, &g_lfo_sc_freq);
   return 0;
 }
 
-void AD5940AMPStructInit(void)
+void app_cfg_struct_init(uint8_t app_id)
 {
-  AppAMPCfg_Type *pCfg;
+  void *p_cfg = NULL;
+  g_p_app_curr = &g_app_list[app_id];
 
-  AppAMPGetCfg(&pCfg);
-  pCfg->WuptClkFreq = LFOSCFreq;
-  /* Configure general parameters */
-  pCfg->SeqStartAddr = 0;
-  pCfg->MaxSeqLen = 512;     /* @todo add checker in function */
-  pCfg->RcalVal = 10000.0;
-  pCfg->NumOfData = -1;      /* Never stop until you stop it manually by AppAMPCtrl() function */
-
-  /* Configure measurement parameters */
-  pCfg->AmpODR = 1;            /* Time between samples in seconds */
-  pCfg->FifoThresh = 4;          /* Number of measurements before alerting host microcontroller */
-
-  pCfg->SensorBias = 0;        /* Sensor bias voltage between reference and sense electrodes*/
-  pCfg->LptiaRtiaSel = LPTIARTIA_1K;
-  pCfg->LpTiaRl = LPTIARLOAD_10R;
-  pCfg->Vzero = 1100;            /* Vzero voltage. Voltage on Sense electrode. Unit is mV*/
-
-  pCfg->ADCRefVolt = 1.82;   /* Measure voltage on Vref_1V8 pin */
+  switch(app_id)
+  {
+    case APP_ID_AMP:
+      g_p_app_curr->pAppGetCfg((AppAMPCfg_Type*)p_cfg);
+      ((AppAMPCfg_Type*)p_cfg)->WuptClkFreq = g_lfo_sc_freq;
+      /* Configure general parameters */
+      ((AppAMPCfg_Type*)p_cfg)->SeqStartAddr = 0;
+      ((AppAMPCfg_Type*)p_cfg)->MaxSeqLen = 512;     /* @todo add checker in function */
+      ((AppAMPCfg_Type*)p_cfg)->RcalVal = 10000.0;
+      ((AppAMPCfg_Type*)p_cfg)->NumOfData = -1;      /* Never stop until you stop it manually by AppAMPCtrl() function */
+      /* Configure measurement parameters */
+      ((AppAMPCfg_Type*)p_cfg)->AmpODR = 1;            /* Time between samples in seconds */
+      ((AppAMPCfg_Type*)p_cfg)->FifoThresh = 4;          /* Number of measurements before alerting host microcontroller */
+      ((AppAMPCfg_Type*)p_cfg)->SensorBias = 0;        /* Sensor bias voltage between reference and sense electrodes*/
+      ((AppAMPCfg_Type*)p_cfg)->LptiaRtiaSel = LPTIARTIA_1K;
+      ((AppAMPCfg_Type*)p_cfg)->LpTiaRl = LPTIARLOAD_10R;
+      ((AppAMPCfg_Type*)p_cfg)->Vzero = 1100;            /* Vzero voltage. Voltage on Sense electrode. Unit is mV*/
+      ((AppAMPCfg_Type*)p_cfg)->ADCRefVolt = 1.82;   /* Measure voltage on Vref_1V8 pin */
+      break;
+    case APP_ID_IMP:
+      g_p_app_curr->pAppGetCfg((AppIMPCfg_Type*)p_cfg);
+      /* Step1: configure initialization sequence Info */
+      ((AppIMPCfg_Type*)p_cfg)->SeqStartAddr = 0;
+      ((AppIMPCfg_Type*)p_cfg)->MaxSeqLen = 512; /* @todo add checker in function */
+      ((AppIMPCfg_Type*)p_cfg)->RcalVal = 10000.0;
+      ((AppIMPCfg_Type*)p_cfg)->SinFreq = 60000.0;
+      ((AppIMPCfg_Type*)p_cfg)->FifoThresh = 4;
+      /* Set switch matrix to onboard(EVAL-AD5940ELECZ) dummy sensor. */
+      /* Note the RCAL0 resistor is 10kOhm. */
+      ((AppIMPCfg_Type*)p_cfg)->DswitchSel = SWD_CE0;
+      ((AppIMPCfg_Type*)p_cfg)->PswitchSel = SWP_RE0;
+      ((AppIMPCfg_Type*)p_cfg)->NswitchSel = SWN_SE0;
+      ((AppIMPCfg_Type*)p_cfg)->TswitchSel = SWT_SE0LOAD;
+       /*The dummy sensor is as low as 5kOhm. We need to make sure RTIA is small enough that HSTIA won't be saturated. */
+      ((AppIMPCfg_Type*)p_cfg)->HstiaRtiaSel = HSTIARTIA_5K;
+      /* Configure the sweep function. */
+      ((AppIMPCfg_Type*)p_cfg)->SweepCfg.SweepEn = bTRUE;
+      ((AppIMPCfg_Type*)p_cfg)->SweepCfg.SweepStart = 100.0f;  /* Start from 1kHz */
+      ((AppIMPCfg_Type*)p_cfg)->SweepCfg.SweepStop = 100e3f;   /* Stop at 100kHz */
+      ((AppIMPCfg_Type*)p_cfg)->SweepCfg.SweepPoints = 101;    /* Points is 101 */
+      ((AppIMPCfg_Type*)p_cfg)->SweepCfg.SweepLog = bTRUE;
+      /* Configure Power Mode. Use HP mode if frequency is higher than 80kHz. */
+      ((AppIMPCfg_Type*)p_cfg)->PwrMod = AFEPWR_HP;
+      /* Configure filters if necessary */
+      ((AppIMPCfg_Type*)p_cfg)->ADCSinc3Osr = ADCSINC3OSR_2;   /* Sample rate is 800kSPS/2 = 400kSPS */
+      ((AppIMPCfg_Type*)p_cfg)->DftNum = DFTNUM_16384;
+      ((AppIMPCfg_Type*)p_cfg)->DftSrc = DFTSRC_SINC3;
+      break;
+    default:
+      break;
+  }
 }
-
-void AD5940IMPStructInit(void)
-{
-  AppIMPCfg_Type *pCfg;
-
-  AppIMPGetCfg(&pCfg);
-  /* Step1: configure initialization sequence Info */
-  pCfg->SeqStartAddr = 0;
-  pCfg->MaxSeqLen = 512; /* @todo add checker in function */
-
-  pCfg->RcalVal = 10000.0;
-  pCfg->SinFreq = 60000.0;
-  pCfg->FifoThresh = 4;
-
-  /* Set switch matrix to onboard(EVAL-AD5940ELECZ) dummy sensor. */
-  /* Note the RCAL0 resistor is 10kOhm. */
-  pCfg->DswitchSel = SWD_CE0;
-  pCfg->PswitchSel = SWP_RE0;
-  pCfg->NswitchSel = SWN_SE0;
-  pCfg->TswitchSel = SWT_SE0LOAD;
-  /* The dummy sensor is as low as 5kOhm. We need to make sure RTIA is small enough that HSTIA won't be saturated. */
-  pCfg->HstiaRtiaSel = HSTIARTIA_5K;
-
-  /* Configure the sweep function. */
-  pCfg->SweepCfg.SweepEn = bTRUE;
-  pCfg->SweepCfg.SweepStart = 100.0f;  /* Start from 1kHz */
-  pCfg->SweepCfg.SweepStop = 100e3f;   /* Stop at 100kHz */
-  pCfg->SweepCfg.SweepPoints = 101;    /* Points is 101 */
-  pCfg->SweepCfg.SweepLog = bTRUE;
-  /* Configure Power Mode. Use HP mode if frequency is higher than 80kHz. */
-  pCfg->PwrMod = AFEPWR_HP;
-  /* Configure filters if necessary */
-  pCfg->ADCSinc3Osr = ADCSINC3OSR_2;   /* Sample rate is 800kSPS/2 = 400kSPS */
-  pCfg->DftNum = DFTNUM_16384;
-  pCfg->DftSrc = DFTSRC_SINC3;
-}
-
-app_t *pCurrApp;
-uint8_t bSwitchApp = 1;
-uint8_t toApp = APP_ID_AMP;
 
 void AD5940_Main(void)
 {
-  static uint32_t IntCount;
   uint32_t temp;
 
   AD5940PlatformCfg();
 
-  AD5940AMPStructInit();
-  AD5940IMPStructInit();
+  for(uint8_t i=0; i<APP_NUM; i++)
+  {
+    app_cfg_struct_init(i);
+  }
 
   while(1)
   {
-    if(bSwitchApp)
+    if(g_switch_app)
     {
-      bSwitchApp = 0;
-      pCurrApp = &app_list[toApp];
-      /* Initialize registers that fit to all measurements */
+      g_switch_app = 0;
+      g_p_app_curr = &g_app_list[g_app_id];
       AD5940PlatformCfg();
-      pCurrApp->pAppInit(AppBuff, APP_BUFF_SIZE);
-      AD5940_ClrMCUIntFlag(); /* Clear the interrupts happened during initialization */
-      pCurrApp->pAppCtrl(APPCTRL_START, 0);         /* Control BIA measurment to start. Second parameter has no meaning with this command. */
+      g_p_app_curr->pAppInit(g_app_buf, APP_BUF_SIZE);
+      AD5940_ClrMCUIntFlag();
+      //cmd_start_measurment(); //start application
+      printf(APP_READY_STR); //app ready
     }
-    /* Check if interrupt flag which will be set when interrupt occured. */
     if(AD5940_GetMCUIntFlag())
     {
-      AD5940_ClrMCUIntFlag(); /* Clear this flag */
-      temp = APP_BUFF_SIZE;
-      pCurrApp->pAppISR(AppBuff, &temp); /* Deal with it and provide a buffer to store data we got */
-      if(pCurrApp->pAppUserDataProc)
-        pCurrApp->pAppUserDataProc(AppBuff, temp); /* Show the results to UART */
+      AD5940_ClrMCUIntFlag();
+      temp = APP_BUF_SIZE;
+      g_p_app_curr->pAppISR(g_app_buf, &temp);
+      if(g_p_app_curr->pAppUserDataProc)
+        g_p_app_curr->pAppUserDataProc(g_app_buf, temp);
 
-      if(IntCount++ == 10)
+      /// Periodically switch applications based on count, e.g., measure imp. once after every 10th amp. measurement cycle.
+      if((g_p_app_curr->isr_count++ >= g_p_app_curr->cycle_limit))
       {
-        IntCount = 0;
-        /* Control the application at any time */
-        /* For example, I want to measure EDA excitation voltage periodically */
-        //if(toApp == APP_ID_EDA)
-        //  pCurrApp->pAppCtrl(EDACTRL_MEASVOLT, 0);
+        g_p_app_curr->isr_count = 0;
+        cmd_switch_app((uint32_t)g_p_app_curr->app_id_next, 0);
       }
     }
   }
 }
 
-uint32_t command_start_measurment(uint32_t para1, uint32_t para2)
+/**
+ * @brief      Based on command_start_measurment from AD5940_BioElec
+ *
+ * @param[in]  para1  The para 1
+ * @param[in]  para2  The para 2
+ *
+ * @return     0
+ */
+uint32_t cmd_start_measurment(uint32_t para1, uint32_t para2)
 {
-  pCurrApp->pAppCtrl(APPCTRL_START, 0);
+  g_p_app_curr->pAppCtrl(APP_CTRL_START, 0); //pointer to current app object
   return 0;
 }
 
-uint32_t command_stop_measurment(uint32_t para1, uint32_t para2)
+/**
+ * @brief      Based on command_stop_measurment from AD5940_BioElec
+ *
+ * @param[in]  para1  The para 1
+ * @param[in]  para2  The para 2
+ *
+ * @return     0
+ */
+uint32_t cmd_stop_measurment(uint32_t para1, uint32_t para2)
 {
-  pCurrApp->pAppCtrl(APPCTRL_STOPNOW, 0);
+  g_p_app_curr->pAppCtrl(APP_CTRL_STOP_NOW, 0); //pointer to current app object
   return 0;
 }
 
-uint32_t command_switch_app(uint32_t AppID, uint32_t para2)
+/**
+ * @brief      Based on command_switch_app from AD5940_BioElec
+ *
+ * @param[in]  para1  The para 1
+ * @param[in]  para2  The para 2
+ *
+ * @return     Error flag
+ */
+uint32_t cmd_switch_app(uint32_t app_id, uint32_t para2)
 {
-  if(AppID == APP_ID_AMP)
+  if(app_id < APP_NUM) //check if id is valid
   {
-    AD5940AMPStructInit();
-    printf("Switch to Amperometric application\r\n");
+    app_cfg_struct_init(app_id);
   }
-  else if(AppID == APP_ID_IMP)
+  else
   {
-    AD5940IMPStructInit();
-    printf("Switch to Impedance application\r\n");
-  }
-  else {
-    printf("Invalid application ID.\r\n");
+    printf("?\r\n");
     return (uint32_t)-1;
   }
+  if(g_p_app_curr) //pointer to current app object
+    g_p_app_curr->pAppCtrl(APP_CTRL_STOP_NOW, 0); //pointer to current app object
 
-  if(pCurrApp)
-    pCurrApp->pAppCtrl(APPCTRL_STOPNOW, 0);
-  bSwitchApp = 1;
-  toApp = AppID;
+  g_switch_app = 1;
+  g_app_id = app_id;
   return 0;
 }

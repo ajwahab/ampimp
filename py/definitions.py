@@ -1,0 +1,4 @@
+
+APP_ID_AMP = 0
+APP_ID_IMP = 1
+
