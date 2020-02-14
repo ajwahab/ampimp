@@ -14,6 +14,8 @@ class AD5940AppController:
     def run(self):
         with open(self.filename, "a") as f:
             writer = csv.writer(f, delimiter=",")
+
+        self.start()
         while True:
             try:
                 raw_bytes = self.ser.readline()
@@ -26,9 +28,12 @@ class AD5940AppController:
                     pass
                 print(decoded)
                 writer.writerow(decoded)
-            pass
+            except:
+                print("Keyboard Interrupt")
+                self.stop()
+                break
 
-    def parse_amp(pkt):
+    def parse_amp(self, pkt):
         decoded = []
         decoded['time'] = self.timestamp()
         decoded['app_id'] = int(pkt[0])
@@ -36,7 +41,7 @@ class AD5940AppController:
         decoded['i_ua'] = float(pkt[2])
         return decoded
 
-    def parse_imp(pkt):
+    def parse_imp(self, pkt):
         decoded = []
         decoded['time'] = self.timestamp()
         decoded['app_id'] = int(pkt[0])
@@ -45,6 +50,18 @@ class AD5940AppController:
         decoded['mag'] = float(pkt[3])
         decoded['phase'] = float(pkt[4])
         return decoded
+
+    def cmd_start(self):
+        self.ser.write("start\n")
+
+    def cmd_stop(self):
+        self.ser.write("stop\n")
+
+    def cmd_switch_app(self, app_id):
+        self.ser.write(f"switch {int(app_id)}\n")
+
+    def cmd_help(self):
+        self.ser.write("help\n")
 
 if __name__ == '__main__':
     date_suffix = datetime.now().strftime('%y%m%d%H%M%S')

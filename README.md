@@ -15,17 +15,16 @@ Custom application for the [EVAL-AD5940ELCZ](https://wiki.analog.com/resources/e
     - `switch <appid>`: stop current app and switch to new application set by `<appid>`  
         `<appid>`: 0 = amperometric, 1 = impedance  
 
-## Jupyter notebook  
+## Python  
 Prerequisites: 
 - [Python 3](https://www.python.org)  
-- [Jupyter](https://jupyter.org)  
-- [pySerial](https://pyserial.readthedocs.io/en/latest/pyserial.html)  
-- [Pandas](https://pandas.pydata.org)  
+- [pySerial](https://pyserial.readthedocs.io/en/latest/pyserial.html)   
 - [numpy](https://numpy.org)  
 
-`$ pip3 install --user pyserial notebook pandas numpy`  
-`$ cd python`  
-`$ jupyter-notebook`  
+`$ cd py`  
+`$ pipenv install`
+`$ pipenv shell`  
+`$ python3 ad5940_app.py`  
 
 ----
 # Development  
