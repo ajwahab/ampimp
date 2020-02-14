@@ -1,24 +1,17 @@
 #!/bin/bash
-
-# Create build directory
-if [ -d ../build ]
+SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 ; pwd -P )"
+if [ -d ${SCRIPT_PATH}/../build ]
 then
-    rm -rf ../build
+    rm -rf ${SCRIPT_PATH}/../build
 fi
-mkdir ../build
-cd ../build
-
-# Configure build environment
-# set -DTOOLCHAIN_PREFIX to the install directory of gcc-arm-non-eabi (e.g. /usr/local/gcc-arm-none-eabi-6-2017-q1-update)
+mkdir ${SCRIPT_PATH}/../build
+pushd ${SCRIPT_PATH}/../build
 cmake -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-arm-none-eabi.cmake    \
       -DTOOLCHAIN_PREFIX=/usr/local   \
       -G "Eclipse CDT4 - Unix Makefiles"    \
       -DCMAKE_BUILD_TYPE=Debug    \
       -DCMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE    \
       -DCMAKE_ECLIPSE_MAKE_ARGUMENTS=-j8    \
-      ../ad5940
-
-# Build
+      ${SCRIPT_PATH}
 make
-
-# Resulting binary can be flashed using Segger Ozone, openocd, etc.
+popd
