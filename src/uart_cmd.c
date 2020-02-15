@@ -40,7 +40,7 @@ uint32_t cmd_help(uint32_t param1, uint32_t param2)
 uint32_t cmd_say_hello(uint32_t param1, uint32_t param2)
 {
   printf("param1:0x%08lx, param2:0x%08lx\r\n", param1, param2);
-  printf("Hello, is it C you're looking for?\r\n");
+  printf("Hello, is it C you're looking for\r\n");
   return 0x12345678;
 }
 
@@ -164,7 +164,7 @@ void uart_cmd_process(char c)
     }
     /* Step3, call function */
     res = ((uint32_t (*)(uint32_t, uint32_t))(g_p_obj_found))(g_param[0], g_param[1]);
-    // printf("res: 0x%08x\r\n", res);
+    printf("res:0x%08x\r\n", res);
     g_line_buf_idx = 0;  /* Reset buffer */
   }
   else

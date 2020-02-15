@@ -15,7 +15,9 @@ class AD5940AppController:
         with open(self.filename, "a") as f:
             writer = csv.writer(f, delimiter=",")
 
-        self.start()
+        # self.cmd_switch_app(APP_ID_AMP)
+        # time.sleep(2)
+        self.cmd_start()
         while True:
             try:
                 raw_bytes = self.ser.readline()

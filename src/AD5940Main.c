@@ -25,10 +25,6 @@ enum {
 
 #define APP_BUF_SIZE        (512)
 
-#define APP_READY_STR "\r\n> "
-#define APP_LEAD_CHAR "$"
-#define APP_TRAIL_CHAR "\r"
-
 typedef struct
 {
   uint32_t isr_count;
@@ -55,7 +51,7 @@ app_t g_app_list[APP_NUM] =
   /* Amperometric App */
   {
     .isr_count = 0,
-    .cycle_limit = 10,
+    .cycle_limit = 2,
     .app_id_next = APP_ID_IMP,
     .pAppGetCfg = AppAMPGetCfg,
     .pAppInit = AppAMPInit,
@@ -66,7 +62,7 @@ app_t g_app_list[APP_NUM] =
   /* Impedance App */
   {
     .isr_count = 0,
-    .cycle_limit = 1,
+    .cycle_limit = 100,
     .app_id_next = APP_ID_AMP,
     .pAppGetCfg = AppIMPGetCfg,
     .pAppInit = AppIMPInit,
@@ -108,10 +104,8 @@ AD5940Err imp_print_result(void *p_data, uint32_t data_count)
   float freq;
   fImpPol_Type *pImp = (fImpPol_Type*)p_data;
   AppIMPCtrl(IMPCTRL_GETFREQ, &freq);
-
   for(int i=0; i<data_count; i++)
   {
-    // printf("RzMag: %f Ohm, RzPhase: %f\r\n", pImp[i].Magnitude, pImp[i].Phase*180/MATH_PI);
     printf("%i,%i,%f,%f,%f\r\n", g_app_id, i, freq, pImp[i].Magnitude, (pImp[i].Phase*180)/MATH_PI);
   }
   return 0;
@@ -193,11 +187,11 @@ void app_cfg_struct_init(uint8_t app_id)
   switch(app_id)
   {
     case APP_ID_AMP:
-      g_p_app_curr->pAppGetCfg((AppAMPCfg_Type*)p_cfg);
+      g_p_app_curr->pAppGetCfg(&p_cfg);
       ((AppAMPCfg_Type*)p_cfg)->WuptClkFreq = g_lfo_sc_freq;
       /* Configure general parameters */
       ((AppAMPCfg_Type*)p_cfg)->SeqStartAddr = 0;
-      ((AppAMPCfg_Type*)p_cfg)->MaxSeqLen = 512;     /* @todo add checker in function */
+      ((AppAMPCfg_Type*)p_cfg)->MaxSeqLen = APP_BUF_SIZE;
       ((AppAMPCfg_Type*)p_cfg)->RcalVal = 10000.0;
       ((AppAMPCfg_Type*)p_cfg)->NumOfData = -1;      /* Never stop until you stop it manually by AppAMPCtrl() function */
       /* Configure measurement parameters */
@@ -210,10 +204,10 @@ void app_cfg_struct_init(uint8_t app_id)
       ((AppAMPCfg_Type*)p_cfg)->ADCRefVolt = 1.82;   /* Measure voltage on Vref_1V8 pin */
       break;
     case APP_ID_IMP:
-      g_p_app_curr->pAppGetCfg((AppIMPCfg_Type*)p_cfg);
+      g_p_app_curr->pAppGetCfg(&p_cfg);
       /* Step1: configure initialization sequence Info */
       ((AppIMPCfg_Type*)p_cfg)->SeqStartAddr = 0;
-      ((AppIMPCfg_Type*)p_cfg)->MaxSeqLen = 512; /* @todo add checker in function */
+      ((AppIMPCfg_Type*)p_cfg)->MaxSeqLen = APP_BUF_SIZE;
       ((AppIMPCfg_Type*)p_cfg)->RcalVal = 10000.0;
       ((AppIMPCfg_Type*)p_cfg)->SinFreq = 60000.0;
       ((AppIMPCfg_Type*)p_cfg)->FifoThresh = 4;
@@ -237,6 +231,8 @@ void app_cfg_struct_init(uint8_t app_id)
       ((AppIMPCfg_Type*)p_cfg)->ADCSinc3Osr = ADCSINC3OSR_2;   /* Sample rate is 800kSPS/2 = 400kSPS */
       ((AppIMPCfg_Type*)p_cfg)->DftNum = DFTNUM_16384;
       ((AppIMPCfg_Type*)p_cfg)->DftSrc = DFTSRC_SINC3;
+      //capture full sweep
+      g_p_app_curr->cycle_limit = ((AppIMPCfg_Type*)p_cfg)->SweepCfg.SweepPoints;
       break;
     default:
       break;
@@ -261,10 +257,11 @@ void AD5940_Main(void)
       g_switch_app = 0;
       g_p_app_curr = &g_app_list[g_app_id];
       AD5940PlatformCfg();
+      app_cfg_struct_init(g_app_id);
       g_p_app_curr->pAppInit(g_app_buf, APP_BUF_SIZE);
+      g_p_app_curr->isr_count = 0;
       AD5940_ClrMCUIntFlag();
-      //cmd_start_measurment(); //start application
-      printf(APP_READY_STR); //app ready
+      cmd_start_measurment(0, 0); //start application
     }
     if(AD5940_GetMCUIntFlag())
     {
@@ -274,7 +271,7 @@ void AD5940_Main(void)
       if(g_p_app_curr->pAppUserDataProc)
         g_p_app_curr->pAppUserDataProc(g_app_buf, temp);
 
-      /// Periodically switch applications based on count, e.g., measure imp. once after every 10th amp. measurement cycle.
+      // Periodically switch applications based on count, e.g., measure imp. once after every 10th amp. measurement cycle.
       if((g_p_app_curr->isr_count++ >= g_p_app_curr->cycle_limit))
       {
         g_p_app_curr->isr_count = 0;
@@ -294,8 +291,8 @@ void AD5940_Main(void)
  */
 uint32_t cmd_start_measurment(uint32_t para1, uint32_t para2)
 {
-  g_p_app_curr->pAppCtrl(APP_CTRL_START, 0); //pointer to current app object
-  return 0;
+  g_p_app_curr->pAppCtrl(APP_CTRL_START, 0);
+  return 1;
 }
 
 /**
@@ -308,8 +305,8 @@ uint32_t cmd_start_measurment(uint32_t para1, uint32_t para2)
  */
 uint32_t cmd_stop_measurment(uint32_t para1, uint32_t para2)
 {
-  g_p_app_curr->pAppCtrl(APP_CTRL_STOP_NOW, 0); //pointer to current app object
-  return 0;
+  g_p_app_curr->pAppCtrl(APP_CTRL_STOP_NOW, 0);
+  return 2;
 }
 
 /**
@@ -322,19 +319,20 @@ uint32_t cmd_stop_measurment(uint32_t para1, uint32_t para2)
  */
 uint32_t cmd_switch_app(uint32_t app_id, uint32_t para2)
 {
-  if(app_id < APP_NUM) //check if id is valid
+  if(app_id < APP_NUM)
   {
-    app_cfg_struct_init(app_id);
+
+    // app_cfg_struct_init(app_id);
   }
   else
   {
     printf("?\r\n");
     return (uint32_t)-1;
   }
-  if(g_p_app_curr) //pointer to current app object
-    g_p_app_curr->pAppCtrl(APP_CTRL_STOP_NOW, 0); //pointer to current app object
+  if(g_p_app_curr)
+    cmd_stop_measurment(0,0);
 
   g_switch_app = 1;
   g_app_id = app_id;
-  return 0;
+  return 3;
 }
