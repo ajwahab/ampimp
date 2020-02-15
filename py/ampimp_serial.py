@@ -7,8 +7,8 @@ from serial.tools import list_ports
 _log = logging.getLogger(__name__)
 _log.setLevel(logging.DEBUG)
 
-class AD5940AppSerial:
-    def __init__(self, port='/dev/cu.usbmodem14502', baudrate=230400):
+class AmpImpSerial:
+    def __init__(self, port='/dev/cu.usbmodem145202', baudrate=230400):
         if not port:
             ports = list(list_ports.grep('usbmodem'))
             if not ports:

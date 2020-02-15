@@ -8,40 +8,30 @@
 #include "uart_cmd.h"
 
 #define LINE_BUF_SIZE (128)
-#define CMD_TABLE_SIZE (6)
+#define CMD_TABLE_SIZE (5)
 
 struct __uart_cmd_table
 {
   void *p_obj;
-  const char *cmd_name;
-  const char *pDesc;
+  const char *p_cmd_name;
+  const char *p_desc;
 }uart_cmd_table[CMD_TABLE_SIZE] =
 {
-  {(void*)cmd_help, "help", "print supported commands"},
-  {(void*)cmd_help, "?", "print supported commands"},
-  {(void*)cmd_say_hello, "hello", "print parameteres and say hello"},
-  {(void*)cmd_start_measurment, "start", "start selected application"},
-  {(void*)cmd_stop_measurment, "stop", "stop selected application"},
-  {(void*)cmd_switch_app, "switch", "stop current APP and switch to new APP set by parameter1"},
+  {(void *)cmd_help, "help", "print supported commands"},
+  {(void *)cmd_start_measurement, "start", "start selected application"},
+  {(void *)cmd_stop_measurement, "stop", "stop selected application"},
+  {(void *)cmd_switch_app, "switch", "stop current APP and switch to new APP set by parameter1"},
+  {(void *)cmd_status, "status", "indicates whether system is ready to receive commands"}
 };
 
 uint32_t cmd_help(uint32_t param1, uint32_t param2)
 {
-  printf("*****help menu*****\r\nsupported commands:\r\n");
   for(int i = 0;i<CMD_TABLE_SIZE;i++)
   {
     if(uart_cmd_table[i].p_obj)
-      printf("%-8s --\t%s\r\n", uart_cmd_table[i].cmd_name, uart_cmd_table[i].pDesc);
+      printf("%-8s\t%s\r\n", uart_cmd_table[i].p_cmd_name, uart_cmd_table[i].p_desc);
   }
-  printf("***table end***\r\n");
   return 0x87654321;
-}
-
-uint32_t cmd_say_hello(uint32_t param1, uint32_t param2)
-{
-  printf("param1:0x%08lx, param2:0x%08lx\r\n", param1, param2);
-  printf("Hello, is it C you're looking for\r\n");
-  return 0x12345678;
 }
 
 char g_line_buf[LINE_BUF_SIZE];
@@ -95,7 +85,7 @@ void uart_cmd_match_command(void)
   }
   for(i=0;i<CMD_TABLE_SIZE;i++)
   {
-    if(strcmp(uart_cmd_table[i].cmd_name, pcmd) == 0)
+    if(strcmp(uart_cmd_table[i].p_cmd_name, pcmd) == 0)
     {
       /* Found you! */
       g_p_obj_found = uart_cmd_table[i].p_obj;

@@ -164,7 +164,7 @@ elseif(AD5940_PROJECT STREQUAL "AD5940_APP")
   set(AD5940_APP_SOURCES
       "src/main.c"
       "src/retarget.c"
-      "src/AD5940Main.c"
+      "src/ampimp.c"
       "src/ADICUP3029Port.c"
       "src/uart_cmd.c"
       "lib/ad5940-examples/examples/AD5940_Amperometric/Amperometric.c"

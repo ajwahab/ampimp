@@ -1,15 +1,15 @@
 
 
 # Description  
-Custom application for the [EVAL-AD5940ELCZ](https://wiki.analog.com/resources/eval/user-guides/eval-ad5940/hardware/eval-ad5940elcz).  
-
+- Custom application for the [EVAL-AD5940ELCZ](https://wiki.analog.com/resources/eval/user-guides/eval-ad5940/hardware/eval-ad5940elcz).  
+- Automatically cycles between amperometric measurements and impedance measurements.  
+- Python application provided for logging of measurements and control.
 ----
 # Usage  
 ## Serial terminal  
 - From Linux terminal: `$ screen -L /dev/cu.usbmodem14502 230400 -L`  
 - Commands:  
-    - `help` or `?`: print supported commands  
-    - `hello`: print parameteres and say hello  
+    - `help`: print supported commands  
     - `start`: start selected application  
     - `stop`: stop selected application  
     - `switch <appid>`: stop current app and switch to new application set by `<appid>`  
@@ -18,13 +18,13 @@ Custom application for the [EVAL-AD5940ELCZ](https://wiki.analog.com/resources/e
 ## Python  
 Prerequisites: 
 - [Python 3](https://www.python.org)  
-- [pySerial](https://pyserial.readthedocs.io/en/latest/pyserial.html)   
-- [numpy](https://numpy.org)  
+- [pySerial](https://pyserial.readthedocs.io/en/latest/pyserial.html)  
 
 `$ cd py`  
 `$ pipenv install`
 `$ pipenv shell`  
-`$ python3 ad5940_app.py`  
+`$ python3 ampimp_app.py`  
+Ctrl+c terminates the app and stops the device.  
 
 ----
 # Development  
@@ -53,41 +53,26 @@ We'll use a special fork of OpenOCD with support for ADuCM302x...
 `$ cd ..`  
 `$ rm -rf ./openocd`  
 
-### gdbgui  
-A browser-based [GUI](https://www.gdbgui.com) for GDB.  
-`$ pip3 install --user gdbgui`  
-
 ## Debugging  
 OpenOCD + GDB may be used for debugging via the CMSIS-DAP interface provided by the ADICUP3029.  
 
 1. In a terminal window:  
-`$ ./ocd.sh`  
-
-1. In a new terminal window:  
-`$ arm-none-eabi-gdb`  
-`(gdb) target remote localhost:3333`  # connect to openocd instance  
-`(gdb) file build/ad5940_app.elf`  # specify binary with debug symbols  
-`(gdb) load`  # flash the target device  
-`(gdb) monitor reset halt`  # reset and halt target  
+`$ ./debug.sh`  
+`(gdb) c`    # continue execution of code  
 Useful commands:  
 `(gdb) step`  # execute next instruction, step into function calls  
 `(gdb) next`  # execute next instruction, step over function calls  
 `(gdb) continue`  # continue running code  
-`(gdb) c`    # same as continue  
+`(gdb) load`  # flash the target device; useful for updating device without disconnecting after building new firmware
 `(gdb) Ctrl+c`  # interrupt execution  
 `(gdb) list`  # display several lines of code at debugger position, repeated calls show more lines  
 `(gdb) break <function>`  # set a breakpoint at the specified function within the current source file  
 `(gdb) b <filename>:<function>`  # set a breakpoint at the specified function within the specified source file  
 `(gdb) b <line number>`  # set breakpoint at line within current source file  
-`(gdb) quit`  # exit GDB  
-The GDB Text User Interface (TUI) mode may be enabled when invoking GDB as:  
-`$ arm-none-eabi-gdb -tui`  
-...or from the CLI within an existing instance of GDB:  
-`(gdb) tui`  
-If installed, gdbgui may be used instead of the default CLI:  
-`$ gdbgui -g arm-none-eabi-gdb`  
+`(gdb) tui`  #launch the Text User Interface
+`(gdb) q`  # exit GDB  
 
-1. In yet another terminal window:  
+1. (optional) In another terminal window:  
 `$ screen -L /dev/cu.usbmodem14502 230400 -L`  
 Useful `screen` commands:  
 `Ctrl+a k`: kill screen session  

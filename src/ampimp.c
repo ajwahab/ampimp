@@ -1,5 +1,5 @@
 /**
- * @defgroup   AD5940MAIN
+ * @defgroup   AMPIMP ampimp
  *
  * @brief      Based on AD5940_Amperometric/AD5940Main.c, AD5940_Impedance/AD5940Main.c, and AD5940_BioElec/AD5940Main.c examples from Analog Devices, Inc.
  *
@@ -37,6 +37,8 @@ typedef struct
   AD5940Err (*pAppUserDataProc)    (void *p_buf, uint32_t p_count);
 } app_t;
 
+// const uint32_t ampimp_pkt_head = AMPIMP_PKT_HEAD; //imp emoji
+// const uint16_t ampimp_pkt_tail = AMPIMP_PKT_TAIL; //CR+LF
 AD5940Err amp_print_result(void *p_data, uint32_t data_count);
 AD5940Err imp_print_result(void *p_data, uint32_t data_count);
 
@@ -45,6 +47,7 @@ uint8_t g_switch_app = 0; //flag to allow app switching
 uint8_t g_app_id = APP_ID_AMP; //set initial application
 uint32_t g_app_buf[APP_BUF_SIZE];
 float g_lfo_sc_freq;    /* Measured LFOSC frequency */
+uint8_t g_status = 0; //flag to indicate if application is ready to receive commands
 
 app_t g_app_list[APP_NUM] =
 {
@@ -86,7 +89,7 @@ AD5940Err amp_print_result(void *p_data, uint32_t data_count)
   /* Print data*/
   for(int i=0; i<data_count; i++)
   {
-    printf("%i,%i,%f\r\n", g_app_id, i, pAmp[i]);
+    printf("%s,%i,%i,%f,\r\n", AMPIMP_PKT_HEAD, g_app_id, i, pAmp[i]);
   }
   return 0;
 }
@@ -106,18 +109,18 @@ AD5940Err imp_print_result(void *p_data, uint32_t data_count)
   AppIMPCtrl(IMPCTRL_GETFREQ, &freq);
   for(int i=0; i<data_count; i++)
   {
-    printf("%i,%i,%f,%f,%f\r\n", g_app_id, i, freq, pImp[i].Magnitude, (pImp[i].Phase*180)/MATH_PI);
+    printf("%s,%i,%i,%f,%f,%f,\r\n", AMPIMP_PKT_HEAD, g_app_id, i, freq, pImp[i].Magnitude, (pImp[i].Phase*180)/MATH_PI);
   }
   return 0;
 }
 
 /**
  * @brief      Initialize AD5940 basic blocks like clock.
- * Based on AD5940PlatformCfg in AD5940_BioElec
+ * Based on AD5940_PlatformCfg in AD5940_BioElec
  *
  * @return     { description_of_the_return_value }
  */
-static int32_t AD5940PlatformCfg(void)
+static int32_t ad5940_cfg(void)
 {
   CLKCfg_Type clk_cfg;
   FIFOCfg_Type fifo_cfg;
@@ -242,16 +245,18 @@ void app_cfg_struct_init(uint8_t app_id)
   }
 }
 
-void AD5940_Main(void)
+void ampimp_main(void)
 {
   uint32_t temp;
 
-  AD5940PlatformCfg();
+  ad5940_cfg();
 
   for(uint8_t i=0; i<APP_NUM; i++)
   {
     app_cfg_struct_init(i);
   }
+  printf("\r\n"); //flush out garbage from AD example libraries
+  g_status = 1;
 
   while(1)
   {
@@ -259,12 +264,12 @@ void AD5940_Main(void)
     {
       g_switch_app = 0;
       g_p_app_curr = &g_app_list[g_app_id];
-      AD5940PlatformCfg();
+      ad5940_cfg();
       app_cfg_struct_init(g_app_id);
       g_p_app_curr->pAppInit(g_app_buf, APP_BUF_SIZE);
       g_p_app_curr->isr_count = 0;
       AD5940_ClrMCUIntFlag();
-      cmd_start_measurment(0, 0); //start application
+      cmd_start_measurement(0, 0); //start application
     }
     if(AD5940_GetMCUIntFlag())
     {
@@ -287,12 +292,12 @@ void AD5940_Main(void)
 /**
  * @brief      Based on command_start_measurment from AD5940_BioElec
  *
- * @param[in]  para1  The para 1
- * @param[in]  para2  The para 2
+ * @param[in]  param1  Parameter 1
+ * @param[in]  param2  Parameter 2
  *
  * @return     0
  */
-uint32_t cmd_start_measurment(uint32_t para1, uint32_t para2)
+uint32_t cmd_start_measurement(uint32_t param1, uint32_t param2)
 {
   g_p_app_curr->pAppCtrl(APP_CTRL_START, 0);
   return 1;
@@ -301,12 +306,12 @@ uint32_t cmd_start_measurment(uint32_t para1, uint32_t para2)
 /**
  * @brief      Based on command_stop_measurment from AD5940_BioElec
  *
- * @param[in]  para1  The para 1
- * @param[in]  para2  The para 2
+ * @param[in]  param1  Parameter 1
+ * @param[in]  param2  Parameter 2
  *
  * @return     0
  */
-uint32_t cmd_stop_measurment(uint32_t para1, uint32_t para2)
+uint32_t cmd_stop_measurement(uint32_t param1, uint32_t param2)
 {
   g_p_app_curr->pAppCtrl(APP_CTRL_STOP_NOW, 0);
   return 2;
@@ -315,27 +320,28 @@ uint32_t cmd_stop_measurment(uint32_t para1, uint32_t para2)
 /**
  * @brief      Based on command_switch_app from AD5940_BioElec
  *
- * @param[in]  para1  The para 1
- * @param[in]  para2  The para 2
+ * @param[in]  param1  Parameter 1
+ * @param[in]  param2  Parameter 2
  *
  * @return     Error flag
  */
-uint32_t cmd_switch_app(uint32_t app_id, uint32_t para2)
+uint32_t cmd_switch_app(uint32_t app_id, uint32_t param2)
 {
-  if(app_id < APP_NUM)
-  {
-
-    // app_cfg_struct_init(app_id);
-  }
-  else
+  if(app_id >= APP_NUM)
   {
     printf("?\r\n");
     return (uint32_t)-1;
   }
   if(g_p_app_curr)
-    cmd_stop_measurment(0,0);
+    cmd_stop_measurement(0,0);
 
   g_switch_app = 1;
   g_app_id = app_id;
   return 3;
+}
+
+uint32_t cmd_status(uint32_t param1, uint32_t param2)
+{
+    printf("%s,$+@+,%i,\r\n", AMPIMP_PKT_HEAD, g_status);
+    return 4;
 }

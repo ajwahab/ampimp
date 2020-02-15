@@ -1,3 +1,11 @@
+/**
+ * @defgroup   RETARGET retarget
+ *
+ * @brief      Retargets printf to uart.
+ *
+ * @author     Awahab
+ * @date       2020
+ */
 #include "retarget.h"
 
 FILE __stdout;

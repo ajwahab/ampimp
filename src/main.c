@@ -8,6 +8,7 @@ Analog Devices Software License Agreement.
 
 */
 
+///\todo use CMSIS BSP pack drivers for serial port.
 #include "main.h"
 
 /* Functions that used to initialize MCU platform */
@@ -18,8 +19,7 @@ int main(void)
   void AD5940_Main(void);
   MCUPlatformInit(0);
   AD5940_MCUResourceInit(0);
-  printf("AD5940-Build Time: %s\r\n", __TIME__);
-  AD5940_Main();
+  ampimp_main();
 }
 
 /* Below functions are used to initialize MCU Platform */
@@ -131,13 +131,12 @@ int UrtCfg(int iBaud)
 
 void UART_Int_Handler(void)
 {
-  // void uart_cmd_process(char);
   uint32_t flag;
+  uint32_t count;
   flag = pADI_UART0->LSR;
   flag = pADI_UART0->IIR;
   if((flag & 0x0e) == 0x04)  /* Receive Byte */
   {
-    uint32_t count;
     count = pADI_UART0->RFC;  /* Receive FIFO count */
     for(int i=0;i < count; i++)
     {
@@ -148,7 +147,6 @@ void UART_Int_Handler(void)
   }
   if((flag & 0x0e) == 0xc)  /* Time-out */
   {
-    uint32_t count;
     count = pADI_UART0->RFC;  /* Receive FIFO count */
     for(int i=0;i < count; i++)
     {
