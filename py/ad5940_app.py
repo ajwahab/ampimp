@@ -2,41 +2,44 @@ import time
 from datetime import datetime
 from ad5940_app_serial import AD5940AppSerial
 from definitions import *
+import csv
 
 class AD5940AppController:
     def __init__(self, filename="data.csv"):
         self.filename = filename
         self.ser = AD5940AppSerial()
 
-    def timestamp():
-        return int(time.time())
+    def timestamp(self):
+        return int(round(time.time() * 1000))
 
     def run(self):
-        with open(self.filename, "a") as f:
-            writer = csv.writer(f, delimiter=",")
 
-        # self.cmd_switch_app(APP_ID_AMP)
-        # time.sleep(2)
-        self.cmd_start()
+        self.cmd_switch_app(APP_ID_AMP)
+        self.ser.ser.flushOutput()
+        self.ser.ser.flushInput()
         while True:
             try:
-                raw_bytes = self.ser.readline()
-                packet = raw_bytes[0:len(raw_bytes)-2].decode("utf-8").split(',')
-                if int(packet[0]) == APP_ID_AMP:
-                    decoded = parse_amp(packet)
-                elif int(packet[1]) == APP_ID_IMP:
-                    decoded = parse_imp(packet)
-                else:
-                    pass
-                print(decoded)
-                writer.writerow(decoded)
-            except:
-                print("Keyboard Interrupt")
-                self.stop()
+                with open(self.filename, "a") as fout:
+                    writer = csv.writer(fout, delimiter=',')
+                    raw_bytes = self.ser.ser.readline()
+                    packet = raw_bytes[0:len(raw_bytes)-2].decode("utf-8").split(',')
+                    decoded = dict()
+                    if packet[0] == str(APP_ID_AMP):
+                        decoded = self.parse_amp(packet)
+                    elif packet[0] == str(APP_ID_IMP):
+                        decoded = self.parse_imp(packet)
+                    else:
+                        pass
+                    if decoded:
+                        print(decoded)
+                        writer.writerow(list(decoded.values()))
+            except KeyboardInterrupt:
+                # print("Keyboard Interrupt")
+                self.cmd_stop()
                 break
 
     def parse_amp(self, pkt):
-        decoded = []
+        decoded = dict()
         decoded['time'] = self.timestamp()
         decoded['app_id'] = int(pkt[0])
         decoded['index'] = int(pkt[1])
@@ -44,7 +47,7 @@ class AD5940AppController:
         return decoded
 
     def parse_imp(self, pkt):
-        decoded = []
+        decoded = dict()
         decoded['time'] = self.timestamp()
         decoded['app_id'] = int(pkt[0])
         decoded['index'] = int(pkt[1])
@@ -54,16 +57,16 @@ class AD5940AppController:
         return decoded
 
     def cmd_start(self):
-        self.ser.write("start\n")
+        self.ser.ser.write(b"start\n")
 
     def cmd_stop(self):
-        self.ser.write("stop\n")
+        self.ser.ser.write(b"stop\n")
 
     def cmd_switch_app(self, app_id):
-        self.ser.write(f"switch {int(app_id)}\n")
+        self.ser.ser.write(b"switch %i\n" % int(app_id))
 
     def cmd_help(self):
-        self.ser.write("help\n")
+        self.ser.ser.write("help\n")
 
 if __name__ == '__main__':
     date_suffix = datetime.now().strftime('%y%m%d%H%M%S')

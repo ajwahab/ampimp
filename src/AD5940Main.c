@@ -41,7 +41,7 @@ AD5940Err amp_print_result(void *p_data, uint32_t data_count);
 AD5940Err imp_print_result(void *p_data, uint32_t data_count);
 
 app_t *g_p_app_curr; //pointer to object for currently running app
-uint8_t g_switch_app = 1; //flag to allow app switching
+uint8_t g_switch_app = 0; //flag to allow app switching
 uint8_t g_app_id = APP_ID_AMP; //set initial application
 uint32_t g_app_buf[APP_BUF_SIZE];
 float g_lfo_sc_freq;    /* Measured LFOSC frequency */
@@ -202,6 +202,7 @@ void app_cfg_struct_init(uint8_t app_id)
       ((AppAMPCfg_Type*)p_cfg)->LpTiaRl = LPTIARLOAD_10R;
       ((AppAMPCfg_Type*)p_cfg)->Vzero = 1100;            /* Vzero voltage. Voltage on Sense electrode. Unit is mV*/
       ((AppAMPCfg_Type*)p_cfg)->ADCRefVolt = 1.82;   /* Measure voltage on Vref_1V8 pin */
+      ((AppAMPCfg_Type*)p_cfg)->AMPInited = bFALSE;
       break;
     case APP_ID_IMP:
       g_p_app_curr->pAppGetCfg(&p_cfg);
@@ -231,6 +232,8 @@ void app_cfg_struct_init(uint8_t app_id)
       ((AppIMPCfg_Type*)p_cfg)->ADCSinc3Osr = ADCSINC3OSR_2;   /* Sample rate is 800kSPS/2 = 400kSPS */
       ((AppIMPCfg_Type*)p_cfg)->DftNum = DFTNUM_16384;
       ((AppIMPCfg_Type*)p_cfg)->DftSrc = DFTSRC_SINC3;
+
+      ((AppIMPCfg_Type*)p_cfg)->IMPInited = bFALSE;
       //capture full sweep
       g_p_app_curr->cycle_limit = ((AppIMPCfg_Type*)p_cfg)->SweepCfg.SweepPoints;
       break;

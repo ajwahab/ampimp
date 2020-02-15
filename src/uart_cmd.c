@@ -164,7 +164,7 @@ void uart_cmd_process(char c)
     }
     /* Step3, call function */
     res = ((uint32_t (*)(uint32_t, uint32_t))(g_p_obj_found))(g_param[0], g_param[1]);
-    printf("res:0x%08x\r\n", res);
+    // printf("res:0x%08x\r\n", res);
     g_line_buf_idx = 0;  /* Reset buffer */
   }
   else
