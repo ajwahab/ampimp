@@ -11,21 +11,23 @@ Analog Devices Software License Agreement.
 ///\todo use CMSIS BSP pack drivers for serial port.
 #include "main.h"
 
+int uart_cfg(int baud);
+
 /* Functions that used to initialize MCU platform */
 uint32_t MCUPlatformInit(void *pCfg);
 
 int main(void)
 {
-  void AD5940_Main(void);
+  void ampimp_main(void);
   MCUPlatformInit(0);
   AD5940_MCUResourceInit(0);
   ampimp_main();
+  return 0;
 }
 
 /* Below functions are used to initialize MCU Platform */
 uint32_t MCUPlatformInit(void *pCfg)
 {
-  int UrtCfg(int iBaud);
 
   /*Stop watch dog timer(ADuCM3029)*/
   pADI_WDT0->CTL = 0xC9;
@@ -41,15 +43,15 @@ uint32_t MCUPlatformInit(void *pCfg)
   pADI_CLKG0_CLK->CTL1 = 0;                   // ACLK,PCLK,HCLK divided by 1
   pADI_CLKG0_CLK->CTL5 = 0x00;                 // Enable clock to all peripherals - no clock gating
 
-  UrtCfg(230400);/*Baud rate: 230400*/
+  uart_cfg(230400);/*Baud rate: 230400*/
   return 1;
 }
 
 /**
-	@brief int UrtCfg(int iBaud, int iBits, int iFormat)
+	@brief int uart_cfg(int baud, int iBits, int iFormat)
 			==========Configure the UART.
-	@param iBaud :{B1200,B2200,B2400,B4800,B9600,B19200,B38400,B57600,B115200,B230400,B430800}	\n
-		Set iBaud to the baudrate required:
+	@param baud :{B1200,B2200,B2400,B4800,B9600,B19200,B38400,B57600,B115200,B230400,B430800}	\n
+		Set baud to the baudrate required:
 		Values usually: 1200, 2200 (for HART), 2400, 4800, 9600,
 		        19200, 38400, 57600, 115200, 230400, 430800, or type in baud-rate directly
 	@note
@@ -60,7 +62,7 @@ uint32_t MCUPlatformInit(void *pCfg)
          the speed of the clock used.
 **/
 
-int UrtCfg(int iBaud)
+int uart_cfg(int baud)
 {
   int iBits = 3;//8bits,
   int iFormat = 0;//, int iBits, int iFormat
@@ -111,11 +113,11 @@ int UrtCfg(int iBaud)
   //   iOSR = 2^(2+iOSR);
   pADI_UART0->COMLCR2 = 0x3;
   iOSR = 32;
-  //i1 = (ullRtClk/(iOSR*iDiv))/iBaud;	              // UART baud rate clock source is PCLK divided by OSR
-  i1 = (ullRtClk/(iOSR*iDiv))/iBaud-1;   //for bigger M and N value
+  //i1 = (ullRtClk/(iOSR*iDiv))/baud;	              // UART baud rate clock source is PCLK divided by OSR
+  i1 = (ullRtClk/(iOSR*iDiv))/baud-1;   //for bigger M and N value
   pADI_UART0->COMDIV = i1;
 
-  pADI_UART0->COMFBR = 0x8800|(((((2048/(iOSR*iDiv))*ullRtClk)/i1)/iBaud)-2048);
+  pADI_UART0->COMFBR = 0x8800|(((((2048/(iOSR*iDiv))*ullRtClk)/i1)/baud)-2048);
   pADI_UART0->COMIEN = 0;
   pADI_UART0->COMLCR = (iFormat&0x3c)|(iBits&3);
 

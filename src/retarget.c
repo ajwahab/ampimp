@@ -6,6 +6,7 @@
  * @author     Awahab
  * @date       2020
  */
+#include "stdio.h"
 #include "retarget.h"
 
 FILE __stdout;
@@ -15,11 +16,7 @@ int fgetc(FILE *f) {
   return (pADI_UART0->COMRX);
 }
 
-#ifdef __ICCARM__
-int putchar(int c)
-#else
 int fputc(int c, FILE *f)
-#endif
 {
   pADI_UART0->COMTX = c;
   while((pADI_UART0->COMLSR&0x20) == 0);// tx fifo empty

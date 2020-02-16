@@ -2,34 +2,34 @@ cmake_minimum_required(VERSION 3.5)
 
 # Uncomment ONLY one (1) project to build
 
-#set(AD5940_PROJECT "AD5940_ADC")
-#set(AD5940_PROJECT "AD5940_Amperometric")
-#set(AD5940_PROJECT "AD5940_BATImpedance")
-#set(AD5940_PROJECT "AD5940_BIA")
-#set(AD5940_PROJECT "AD5940_BioElec")
-#set(AD5940_PROJECT "AD5940_BIOZ")
-#set(AD5940_PROJECT "AD5940_ChronoAmperometric")
-#set(AD5940_PROJECT "AD5940_DFT")
-#set(AD5940_PROJECT "AD5940_ECG")
-#set(AD5940_PROJECT "AD5940_ECSns_EIS")
-#set(AD5940_PROJECT "AD5940_EDA")
-#set(AD5940_PROJECT "AD5940_HSDACCal")
-#set(AD5940_PROJECT "AD5940_Impedance")
-#set(AD5940_PROJECT "AD5940_LPDAC")
-#set(AD5940_PROJECT "AD5940_LPLoop")
-#set(AD5940_PROJECT "AD5940_Ramp")
-#set(AD5940_PROJECT "AD5940_Reset")
-#set(AD5940_PROJECT "AD5940_Sequencer")
-#set(AD5940_PROJECT "AD5940_SPI")
-#set(AD5940_PROJECT "AD5940_SqrWaveVoltammetry")
-#set(AD5940_PROJECT "AD5940_Temperature")
-#set(AD5940_PROJECT "AD5940_WG")
-set(AD5940_PROJECT "AD5940_APP")
+#set(PROJECT "AD5940_ADC")
+#set(PROJECT "AD5940_Amperometric")
+#set(PROJECT "AD5940_BATImpedance")
+#set(PROJECT "AD5940_BIA")
+#set(PROJECT "AD5940_BioElec")
+#set(PROJECT "AD5940_BIOZ")
+#set(PROJECT "AD5940_ChronoAmperometric")
+#set(PROJECT "AD5940_DFT")
+#set(PROJECT "AD5940_ECG")
+#set(PROJECT "AD5940_ECSns_EIS")
+#set(PROJECT "AD5940_EDA")
+#set(PROJECT "AD5940_HSDACCal")
+#set(PROJECT "AD5940_Impedance")
+#set(PROJECT "AD5940_LPDAC")
+#set(PROJECT "AD5940_LPLoop")
+#set(PROJECT "AD5940_Ramp")
+#set(PROJECT "AD5940_Reset")
+#set(PROJECT "AD5940_Sequencer")
+#set(PROJECT "AD5940_SPI")
+#set(PROJECT "AD5940_SqrWaveVoltammetry")
+#set(PROJECT "AD5940_Temperature")
+#set(PROJECT "AD5940_WG")
+set(PROJECT "AMPIMP_APP")
 
-project(${AD5940_PROJECT} C ASM)
+project(${PROJECT} C ASM)
 
-string(TOLOWER "${AD5940_PROJECT}" PROJECT_LOWERCASE)
-string(TOUPPER "${AD5940_PROJECT}" PROJECT_UPPERCASE)
+string(TOLOWER "${PROJECT}" PROJECT_LOWERCASE)
+string(TOUPPER "${PROJECT}" PROJECT_UPPERCASE)
 
 # Linker script
 set(LINKER_SCRIPT "${PROJECT_SOURCE_DIR}/lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/GCC/ADuCM3029.ld")
@@ -96,7 +96,6 @@ set(CMSIS_PACK_INCLUDES
 # Source files
 set(CMSIS_PACK_DEVICE_SOURCES
     "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/system_ADuCM3029.c"
-    #"lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/retarget_uart.c"
     "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/common.c"
     "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/adi_cyclecount.c"
     "lib/bsp/AnalogDevices.ADuCM302x_DFP.3.2.0/Source/GCC/startup_ADuCM3029.c"
@@ -108,60 +107,60 @@ set(AD5940_APP_SOURCES
     "lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/ADICUP3029Port.c"
     "lib/ad5940-examples/examples/AD5940_ADC/ADICUP3029/main.c"
     )
-if(AD5940_PROJECT STREQUAL "AD5940_Ramp")
+if(PROJECT STREQUAL "AD5940_Ramp")
   include(cmake/AD5940_Ramp.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_SqrWaveVoltammetry")
+elseif(PROJECT STREQUAL "AD5940_SqrWaveVoltammetry")
   include(cmake/AD5940_SqrWaveVoltammetry.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_ADC")
+elseif(PROJECT STREQUAL "AD5940_ADC")
   include(cmake/AD5940_ADC.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_ChronoAmperometric")
+elseif(PROJECT STREQUAL "AD5940_ChronoAmperometric")
   include(cmake/AD5940_ChronoAmperometric.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_BATImpedance")
+elseif(PROJECT STREQUAL "AD5940_BATImpedance")
   include(cmake/AD5940_BATImpedance.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_SPI")
+elseif(PROJECT STREQUAL "AD5940_SPI")
   include(cmake/AD5940_SPI.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_LPDAC")
+elseif(PROJECT STREQUAL "AD5940_LPDAC")
   include(cmake/AD5940_LPDAC.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_BIOZ")
+elseif(PROJECT STREQUAL "AD5940_BIOZ")
   include(cmake/AD5940_BIOZ-2Wire.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_Reset")
+elseif(PROJECT STREQUAL "AD5940_Reset")
   include(cmake/AD5940_Reset.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_HSDACCal")
+elseif(PROJECT STREQUAL "AD5940_HSDACCal")
   include(cmake/AD5940_HSDACCal.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_Temperature")
+elseif(PROJECT STREQUAL "AD5940_Temperature")
   include(cmake/AD5940_Temperature.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_Amperometric")
+elseif(PROJECT STREQUAL "AD5940_Amperometric")
   include(cmake/AD5940_Amperometric.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_BioElec")
+elseif(PROJECT STREQUAL "AD5940_BioElec")
   set(AD5940_APP_SOURCES
       "lib/ad5940-examples/examples/AD5940_BioElec/ADICUP3029/ADICUP3029Port.c"
       "lib/ad5940-examples/examples/AD5940_BioElec/ADICUP3029/main.c"
       )
   include(cmake/AD5940_BioElec.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_EDA")
+elseif(PROJECT STREQUAL "AD5940_EDA")
   set(AD5940_APP_SOURCES
       "lib/ad5940-examples/examples/AD5940_EDA/ADICUP3029/ADICUP3029Port.c"
       "lib/ad5940-examples/examples/AD5940_EDA/ADICUP3029/main.c"
       )
   include(cmake/AD5940_EDA.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_ECSns_EIS")
+elseif(PROJECT STREQUAL "AD5940_ECSns_EIS")
   include(cmake/AD5940_ECSensEIS.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_BIA")
+elseif(PROJECT STREQUAL "AD5940_BIA")
   include(cmake/AD5940_BIA.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_DFT")
+elseif(PROJECT STREQUAL "AD5940_DFT")
   include(cmake/AD5940_DFT.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_WG")
+elseif(PROJECT STREQUAL "AD5940_WG")
   include(cmake/AD5940_WG.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_LPLoop")
+elseif(PROJECT STREQUAL "AD5940_LPLoop")
   include(cmake/AD5940_LPLoop.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_ECG")
+elseif(PROJECT STREQUAL "AD5940_ECG")
   include(cmake/AD5940_ECG.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_Sequencer")
+elseif(PROJECT STREQUAL "AD5940_Sequencer")
   include(cmake/AD5940_Sequencer.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_Impedance")
+elseif(PROJECT STREQUAL "AD5940_Impedance")
   include(cmake/AD5940_Impedance.cmake)
-elseif(AD5940_PROJECT STREQUAL "AD5940_APP")
-  set(AD5940_APP_SOURCES
+elseif(PROJECT STREQUAL "AMPIMP_APP")
+  set(AMPIMP_APP_SOURCES
       "src/main.c"
       "src/retarget.c"
       "src/ampimp.c"
@@ -170,27 +169,27 @@ elseif(AD5940_PROJECT STREQUAL "AD5940_APP")
       "lib/ad5940-examples/examples/AD5940_Amperometric/Amperometric.c"
       "lib/ad5940-examples/examples/AD5940_Impedance/Impedance.c"
       )
-  set(AD5940_APP_INCLUDES
+  set(AMPIMP_APP_INCLUDES
       "inc"
       "lib/ad5940-examples/examples/AD5940_Amperometric"
       "lib/ad5940-examples/examples/AD5940_Impedance"
       )
 endif()
 
-set(AD5940_PROJECT_INCLUDES
+set(PROJECT_INCLUDES
     "lib/ad5940-examples/examples/ad5940lib"
-    ${AD5940_APP_INCLUDES}
+    ${AMPIMP_APP_INCLUDES}
     ${CMSIS_PACK_DEVICE_INCLUDES}
     ${CMSIS_PACK_INCLUDES}
     )
 
-set(AD5940_PROJECT_SOURCES
+set(PROJECT_SOURCES
     "lib/ad5940-examples/examples/ad5940lib/ad5940.c"
-    ${AD5940_APP_SOURCES}
+    ${AMPIMP_APP_SOURCES}
     ${CMSIS_PACK_DEVICE_SOURCES}
     )
 
-set(AD5940_PROJECT_DEFINITIONS
+set(PROJECT_DEFINITIONS
     "-DREDIRECT_OUTPUT_TO_UART"
     "-DCHIPSEL_594X"
     "-D_RTE_"
@@ -208,11 +207,11 @@ include(cmake/binutils-arm-none-eabi.cmake)
 link_directories("lib/CMSIS/CMSIS_5/CMSIS/DSP/Lib/GCC")
 
 # Configure target
-add_executable(${AD5940_PROJECT} ${AD5940_PROJECT_SOURCES})
-set_target_properties(${AD5940_PROJECT} PROPERTIES OUTPUT_NAME "${PROJECT_LOWERCASE}.elf")
-target_include_directories(${AD5940_PROJECT} PUBLIC ${AD5940_PROJECT_INCLUDES})
-target_compile_definitions(${AD5940_PROJECT} PUBLIC ${AD5940_PROJECT_DEFINITIONS})
-# target_link_libraries(${AD5940_PROJECT} libarm_cortexM3l_math.a)
-create_bin_output(${AD5940_PROJECT})
-generate_run_gdb_jlink(${AD5940_PROJECT})
-print_section_sizes(${AD5940_PROJECT})
+add_executable(${PROJECT} ${PROJECT_SOURCES})
+set_target_properties(${PROJECT} PROPERTIES OUTPUT_NAME "${PROJECT_LOWERCASE}.elf")
+target_include_directories(${PROJECT} PUBLIC ${PROJECT_INCLUDES})
+target_compile_definitions(${PROJECT} PUBLIC ${PROJECT_DEFINITIONS})
+# target_link_libraries(${PROJECT} libarm_cortexM3l_math.a)
+create_bin_output(${PROJECT})
+generate_run_gdb_jlink(${PROJECT})
+print_section_sizes(${PROJECT})

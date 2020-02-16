@@ -12,12 +12,12 @@ mkdir ${SCRIPT_PATH}/../build
 pushd ${SCRIPT_PATH}/../build
 
 cmake -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-arm-none-eabi.cmake    \
-      -DTOOLCHAIN_PREFIX=/usr/local   \
-      -G "Eclipse CDT4 - Unix Makefiles"    \
-      -DCMAKE_BUILD_TYPE=Debug    \
-      -DCMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE    \
-      -DCMAKE_ECLIPSE_MAKE_ARGUMENTS=-j8    \
       ${SCRIPT_PATH}
+      #-DTOOLCHAIN_PREFIX=/usr/local   \
+      #-G "Eclipse CDT4 - Unix Makefiles"    \
+      #-DCMAKE_BUILD_TYPE=Debug    \
+      #-DCMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE    \
+      #-DCMAKE_ECLIPSE_MAKE_ARGUMENTS=-j8    \
 
 make
 

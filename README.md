@@ -3,7 +3,11 @@
 # Description  
 - Custom application for the [EVAL-AD5940ELCZ](https://wiki.analog.com/resources/eval/user-guides/eval-ad5940/hardware/eval-ad5940elcz).  
 - Automatically cycles between amperometric measurements and impedance measurements.  
-- Python application provided for logging of measurements and control.
+- Python application provided for logging of measurements and control.  
+----
+# Installation  
+## Docker container  
+
 ----
 # Usage  
 ## Serial terminal  

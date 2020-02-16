@@ -11,20 +11,6 @@
 #include "Impedance.h" //in AD5940_Impedance
 #include "Amperometric.h" //in AD5940_Amperometric
 
-enum {
-  APP_ID_AMP,
-  APP_ID_IMP,
-  APP_NUM
-};
-
-#define APP_AMP_SEQ_ADDR    (0)
-#define APP_IMP_SEQ_ADDR    (256)
-
-#define APP_AMP_MAX_SEQLEN  (256)
-#define APP_IMP_MAX_SEQLEN  (128)
-
-#define APP_BUF_SIZE        (512)
-
 typedef struct
 {
   uint32_t isr_count;
