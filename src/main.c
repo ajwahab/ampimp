@@ -1,11 +1,9 @@
 /*
-
 Copyright (c) 2017-2019 Analog Devices, Inc. All Rights Reserved.
 
 This software is proprietary to Analog Devices, Inc. and its licensors.
 By using this software you agree to the terms of the associated
 Analog Devices Software License Agreement.
-
 */
 
 ///\todo use CMSIS BSP pack drivers for serial port.
@@ -18,7 +16,6 @@ uint32_t MCUPlatformInit(void *pCfg);
 
 int main(void)
 {
-  void ampimp_main(void);
   MCUPlatformInit(0);
   AD5940_MCUResourceInit(0);
   ampimp_main();
