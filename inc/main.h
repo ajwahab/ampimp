@@ -21,6 +21,8 @@ enum {
   APP_NUM
 };
 
+void ampimp_main(void);
+
 #define APP_AMP_SEQ_ADDR    (0)
 #define APP_IMP_SEQ_ADDR    (256)
 

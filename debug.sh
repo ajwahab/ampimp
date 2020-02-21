@@ -6,6 +6,8 @@ pushd ${SCRIPT_PATH}
 
 ./ocd.sh &
 
+sleep 2
+
 pid=$(ps -ef | grep "[o]penocd" | awk '{print $2}')
 echo "openocd is running with pid: $pid"
 

@@ -204,7 +204,7 @@ include(cmake/binutils-arm-none-eabi.cmake)
 #add_link_options("-lc")
 
 # ARM Math library
-link_directories("lib/CMSIS/CMSIS_5/CMSIS/DSP/Lib/GCC")
+#link_directories("lib/CMSIS/CMSIS_5/CMSIS/DSP/Lib/GCC")
 
 # Configure target
 add_executable(${PROJECT} ${PROJECT_SOURCES})

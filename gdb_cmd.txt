@@ -1,8 +1,7 @@
-
 target remote localhost:3333
-
-load
-
+set architecture armv7
 monitor reset halt
-
-advance main.c:main
+#load
+#monitor reset halt
+#advance main.c:main
+b main.c:main

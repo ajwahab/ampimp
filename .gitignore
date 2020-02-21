@@ -1,3 +1,5 @@
 build
 .project
 __pycache__
+*.csv
+gdb.txt

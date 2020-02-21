@@ -11,7 +11,7 @@ import csv
 class AmpImpController:
     def __init__(self, filename="data.csv"):
         self.filename = filename
-        self.ser = AmpImpSerial(port='/dev/cu.usbmodem145202')
+        self.ser = AmpImpSerial(port='/dev/ttyACM0')
         self.status = 0
 
     def timestamp(self):
